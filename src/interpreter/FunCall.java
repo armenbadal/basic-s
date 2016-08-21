@@ -15,22 +15,20 @@ public class FunCall implements Expression {
     }
 
     @Override
-    public Constant evaluate(Environment env )
+    public Constant evaluate( Environment env )
     {
-        env.newScope();
+        Environment envloc = new Environment();
 
         List<Constant> argvs = new ArrayList<>();
         for (Expression eo : arguments)
             argvs.add(eo.evaluate(env));
 
         int i = 0;
-        for (String pri : function.parameters)
-            env.add(pri, argvs.get(i++));
+        for( String pri : function.parameters )
+            envloc.add(pri, argvs.get(i++));
 
-        function.body.execute(env);
-        Constant rval = env.get("$$");
-
-        env.popScope();
+        function.body.execute(envloc);
+        Constant rval = envloc.get(function.name);
 
         return rval;
     }

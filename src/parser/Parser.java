@@ -74,6 +74,7 @@ public class Parser {
         subr.body = parseStatementList();
         match(Token.End);
         match(Token.Function);
+        parseNewLines();
 
         return subr;
     }

@@ -15,7 +15,7 @@ public class ParserTest {
     {
         Parser  parser0 = new Parser("DECLARE FUNCTION f(x, y)\n");
         parser0.parse();
-        for(Function fi : parser0.subroutines )
+        for( Function fi : parser0.subroutines )
             System.out.println(fi.toString());
     }
 
@@ -24,7 +24,7 @@ public class ParserTest {
     {
         Parser  parser0 = new Parser("FUNCTION f(x, y)\n  c = x^2 + y^2\nEND FUNCTION\n");
         parser0.parse();
-        for(Function fi : parser0.subroutines )
+        for( Function fi : parser0.subroutines )
             System.out.println(fi.toString());
     }
 
@@ -44,7 +44,7 @@ public class ParserTest {
 
         Parser  parser0 = new Parser(text);
         parser0.parse();
-        for(Function fi : parser0.subroutines )
+        for( Function fi : parser0.subroutines )
             System.out.println(fi.toString());
     }
 
@@ -59,7 +59,7 @@ public class ParserTest {
 
         Parser  parser0 = new Parser(text);
         parser0.parse();
-        for(Function fi : parser0.subroutines )
+        for( Function fi : parser0.subroutines )
             System.out.println(fi.toString());
     }
 }

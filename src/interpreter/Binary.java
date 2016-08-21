@@ -18,7 +18,47 @@ public class Binary implements Expression {
     @Override
     public Constant evaluate(Environment env )
     {
-        return null;
+        Constant res0 = subexpro.evaluate(env);
+        Constant res1 = subexpri.evaluate(env);
+
+        double resval = 0.0;
+        switch( operation ) {
+            case "+":
+                resval = res0.value + res1.value;
+                break;
+            case "-":
+                resval = res0.value - res1.value;
+                break;
+            case "*":
+                resval = res0.value * res1.value;
+                break;
+            case "/":
+                resval = res0.value / res1.value;
+                break;
+            case "^":
+                resval = Math.pow(res0.value, res1.value);
+                break;
+            case "=":
+                resval = res0.value == res1.value ? 1.0 : 0.0;
+                break;
+            case "<>":
+                resval = res0.value != res1.value ? 1.0 : 0.0;
+                break;
+            case ">":
+                resval = res0.value > res1.value ? 1.0 : 0.0;
+                break;
+            case ">=":
+                resval = res0.value >= res1.value ? 1.0 : 0.0;
+                break;
+            case "<":
+                resval = res0.value < res1.value ? 1.0 : 0.0;
+                break;
+            case "<=":
+                resval = res0.value <= res1.value ? 1.0 : 0.0;
+                break;
+        }
+
+        return new Constant(resval);
     }
 
     @Override
