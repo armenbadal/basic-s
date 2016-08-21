@@ -29,6 +29,6 @@ public class Sequence implements Statement {
     {
         ArrayList<String> stals = new ArrayList<>();
         statements.forEach(e -> stals.add(e.toString()));
-        return String.join("\n", stals);
+        return String.join("\n", stals) + "\n";
     }
 }

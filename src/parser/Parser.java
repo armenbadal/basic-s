@@ -22,24 +22,29 @@ public class Parser {
     {
         subroutines = new ArrayList<>();
 
-        while( lookahead.is(Token.Declare, Token.Function) ) {
-            Function subri = null;
-            if( lookahead.is(Token.Declare) )
-                subri = parseDeclare();
-            else if( lookahead.is(Token.Function) )
-                subri = parseFunction();
-            if( subri != null )
-                subroutines.add(subri);
+        try {
+            while( lookahead.is(Token.Declare, Token.Function) ) {
+                Function subri = null;
+                if( lookahead.is(Token.Declare) )
+                    subri = parseDeclare();
+                else if( lookahead.is(Token.Function) )
+                    subri = parseFunction();
+                if( subri != null )
+                    subroutines.add(subri);
+            }
+        }
+        catch( SyntaxError se ) {
+            System.err.println(se.getMessage());
         }
     }
 
-    private Function parseDeclare()
+    private Function parseDeclare() throws SyntaxError
     {
         match(Token.Declare);
         return parseFuncHeader();
     }
 
-    private Function parseFuncHeader()
+    private Function parseFuncHeader() throws SyntaxError
     {
         match(Token.Function);
         String name = lookahead.value;
@@ -63,7 +68,7 @@ public class Parser {
         return new Function(name, params, null);
     }
 
-    private Function parseFunction()
+    private Function parseFunction() throws SyntaxError
     {
         Function subr = parseFuncHeader();
         subr.body = parseStatementList();
@@ -73,7 +78,7 @@ public class Parser {
         return subr;
     }
 
-    private Statement parseStatementList()
+    private Statement parseStatementList() throws SyntaxError
     {
         Sequence seq = new Sequence();
         while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While) ) {
@@ -84,7 +89,7 @@ public class Parser {
         return seq;
     }
 
-    private Statement parseStatement()
+    private Statement parseStatement() throws SyntaxError
     {
         Statement stat = null;
         switch( lookahead.kind ) {
@@ -112,7 +117,7 @@ public class Parser {
         return stat;
     }
 
-    private Statement parseAssignment()
+    private Statement parseAssignment() throws SyntaxError
     {
         String varl = lookahead.value;
         match(Token.Identifier);
@@ -122,7 +127,7 @@ public class Parser {
         return new Assignment(varl, exl);
     }
 
-    private Statement parseInput()
+    private Statement parseInput() throws SyntaxError
     {
         match(Token.Input);
         String varn = lookahead.value;
@@ -131,15 +136,15 @@ public class Parser {
         return new Input(varn);
     }
 
-    private Statement parsePrint()
+    private Statement parsePrint() throws SyntaxError
     {
         match(Token.Print);
         Expression exo = parseDisjunction();
 
-        return null;
+        return new Print(exo);
     }
 
-    private Statement parseConditional()
+    private Statement parseConditional() throws SyntaxError
     {
         match(Token.If);
         Expression cond = parseDisjunction();
@@ -159,6 +164,7 @@ public class Parser {
         }
         if( lookahead.is(Token.Else) ) {
             match(Token.Else);
+            parseNewLines();
             Statement bre = parseStatementList();
             bi.setElse(bre);
         }
@@ -168,7 +174,7 @@ public class Parser {
         return statbr;
     }
 
-    private Statement parseForLoop()
+    private Statement parseForLoop() throws SyntaxError
     {
         match(Token.For);
         String prn = lookahead.value;
@@ -190,7 +196,7 @@ public class Parser {
         return new ForLoop(prn, init, lim, ste, bdy);
     }
 
-    private Statement parseWhileLoop()
+    private Statement parseWhileLoop() throws SyntaxError
     {
         match(Token.While);
         Expression cond = parseDisjunction();
@@ -202,14 +208,14 @@ public class Parser {
         return new WhileLoop(cond, bdy);
     }
 
-    private void parseNewLines()
+    private void parseNewLines() throws SyntaxError
     {
         match(Token.NewLine);
         while( lookahead.is(Token.NewLine) )
             lookahead = scan.next();
     }
 
-    private Expression parseDisjunction()
+    private Expression parseDisjunction() throws SyntaxError
     {
         Expression exo = parseConjunction();
         while( lookahead.is(Token.Or) ) {
@@ -220,7 +226,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseConjunction()
+    private Expression parseConjunction() throws SyntaxError
     {
         Expression exo = parseEquation();
         while( lookahead.is(Token.And) ) {
@@ -231,7 +237,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseEquation()
+    private Expression parseEquation() throws SyntaxError
     {
         Expression exo = parseRelation();
         if( lookahead.is(Token.Eq, Token.Ne) ) {
@@ -243,7 +249,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseRelation()
+    private Expression parseRelation() throws SyntaxError
     {
         Expression exo = parseAddition();
         if( lookahead.is(Token.Gt, Token.Ge, Token.Lt, Token.Le) ) {
@@ -255,7 +261,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseAddition()
+    private Expression parseAddition() throws SyntaxError
     {
         Expression exo = parseMultiplication();
         while( lookahead.is(Token.Add, Token.Sub) ) {
@@ -267,7 +273,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseMultiplication()
+    private Expression parseMultiplication() throws SyntaxError
     {
         Expression exo = parsePower();
         while( lookahead.is(Token.Mul, Token.Div) ) {
@@ -279,7 +285,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parsePower()
+    private Expression parsePower() throws SyntaxError
     {
         Expression exo = parseFactor();
         if( lookahead.is(Token.Power) ) {
@@ -290,7 +296,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseFactor()
+    private Expression parseFactor() throws SyntaxError
     {
         if( lookahead.is(Token.Number) ) {
             double numval = Double.valueOf(lookahead.value);
@@ -315,7 +321,12 @@ public class Parser {
                     }
                 }
                 match(Token.RightParen);
-                return new FunCall(null, argus);
+                // գտնել հայտարարված կամ սահմանված ֆունկցիան
+                Function func = null;
+                for( Function fi : subroutines )
+                    if( fi.name.equals(varnam) )
+                        func = fi;
+                return new FunCall(func, argus);
             }
             return new Variable(varnam);
         }
@@ -344,9 +355,11 @@ public class Parser {
         return null;
     }
 
-    private void match( Token exp )
+    private void match( Token exp ) throws SyntaxError
     {
         if( lookahead.is(exp) )
             lookahead = scan.next();
+        else
+            throw new SyntaxError("Շարահյուսական սխալ։");
     }
 }
