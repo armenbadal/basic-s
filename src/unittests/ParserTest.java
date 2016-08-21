@@ -47,4 +47,19 @@ public class ParserTest {
         for(Function fi : parser0.subroutines )
             System.out.println(fi.toString());
     }
+
+    @Test
+    public void test_d() throws Exception
+    {
+        String text = "FUNCTION f(x, y)\n" +
+                "  FOR i = 1 + x TO y^2 STEP 1.5\n" +
+                "    PRINT i\n" +
+                "  END FOR\n" +
+                "END FUNCTION\n";
+
+        Parser  parser0 = new Parser(text);
+        parser0.parse();
+        for(Function fi : parser0.subroutines )
+            System.out.println(fi.toString());
+    }
 }

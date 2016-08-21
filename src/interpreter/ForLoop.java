@@ -43,7 +43,7 @@ public class ForLoop implements Statement {
         StringBuilder srbu = new StringBuilder();
         srbu.append(String.format("FOR %s = %s TO %s", param, initial, limit));
         if( step != null )
-            srbu.append(String.format("STEP %s", step));
+            srbu.append(String.format(" STEP %s", step));
         srbu.append("\n");
         srbu.append(body);
         srbu.append("END FOR");
