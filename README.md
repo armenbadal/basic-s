@@ -1,4 +1,4 @@
-# «Բեյսիկ-Փ» ծրագրավորման լեզվի իրականացում։
+# «Բեյսիկ-Փ» ծրագրավորման լեզվի իրականացում
 
 Այս նախագծի ամբողջական և մանրամասն նկարագրությունը պետք է դառնա ինտերպրետատոր գրելու ուղեցույց։ Պրոյեկտի լրացումները ձևակերպվելու են որպես խնդիրներ՝ ինքնուրույն աշխատանքների համար։
 
@@ -17,9 +17,9 @@
 
 ````
 Program = { (Declare | Function) }.
-Declare = DECLARE FuncHeader.
-FuncHeader = FUNCTION IDENT '(' ')' NewLines.
-Function = FuncHeader { Statement NewLines } END FUNCTION.
+Declare = 'DECLARE' FuncHeader.
+FuncHeader = 'FUNCTION' IDENT '(' ')' NewLines.
+Function = FuncHeader { Statement NewLines } 'END' 'FUNCTION'.
 Statement = IDENT '=' Disjunction
     | INPUT IDENT
     | PRINT Disjunction
