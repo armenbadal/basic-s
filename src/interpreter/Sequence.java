@@ -18,7 +18,7 @@ public class Sequence implements Statement {
     }
 
     @Override
-    public void execute( Environment env )
+    public void execute( Environment env ) throws RuntimeError
     {
         for( Statement sti : statements )
             sti.execute(env);

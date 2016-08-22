@@ -14,9 +14,14 @@ public class Unary implements Expression {
     }
 
     @Override
-    public Constant evaluate(Environment env )
+    public Constant evaluate(Environment env ) throws RuntimeError
     {
-        return null;
+        Constant res = subexpr.evaluate(env);
+        if( operation.equals("-") )
+            res.value = -res.value;
+        else if( operation.equals("NOT") )
+            res.value = res.value == 0 ? 0 : 1;
+        return res;
     }
 
     @Override

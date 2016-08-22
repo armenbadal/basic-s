@@ -20,7 +20,7 @@ public class ForLoop implements Statement {
     }
 
     @Override
-    public void execute( Environment env )
+    public void execute( Environment env ) throws RuntimeError
     {
         Constant vi = initial.evaluate(env);
         Constant vb = limit.evaluate(env);

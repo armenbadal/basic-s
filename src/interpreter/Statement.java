@@ -2,5 +2,5 @@ package interpreter;
 
 /**/
 public interface Statement {
-    void execute( Environment env );
+    void execute( Environment env ) throws RuntimeError;
 }

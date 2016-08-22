@@ -16,7 +16,7 @@ public class Binary implements Expression {
     }
 
     @Override
-    public Constant evaluate(Environment env )
+    public Constant evaluate(Environment env ) throws RuntimeError
     {
         Constant res0 = subexpro.evaluate(env);
         Constant res1 = subexpri.evaluate(env);
@@ -33,6 +33,8 @@ public class Binary implements Expression {
                 resval = res0.value * res1.value;
                 break;
             case "/":
+                if( res1.value == 0.0 )
+                    throw new RuntimeError("Բաժանում զրոյի վրա։");
                 resval = res0.value / res1.value;
                 break;
             case "^":

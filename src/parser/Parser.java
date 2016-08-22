@@ -10,7 +10,7 @@ public class Parser {
     private Scanner scan = null;
     private Lexeme lookahead = null;
 
-    public List<Function> subroutines = null;
+    private List<Function> subroutines = null;
 
     public Parser( String text )
     {
@@ -18,24 +18,21 @@ public class Parser {
         lookahead = scan.next();
     }
 
-    public void parse()
+    public List<Function> parse() throws SyntaxError
     {
         subroutines = new ArrayList<>();
 
-        try {
-            while( lookahead.is(Token.Declare, Token.Function) ) {
-                Function subri = null;
-                if( lookahead.is(Token.Declare) )
-                    subri = parseDeclare();
-                else if( lookahead.is(Token.Function) )
-                    subri = parseFunction();
-                if( subri != null )
-                    subroutines.add(subri);
-            }
+        while( lookahead.is(Token.Declare, Token.Function) ) {
+            Function subri = null;
+            if( lookahead.is(Token.Declare) )
+                subri = parseDeclare();
+            else if( lookahead.is(Token.Function) )
+                subri = parseFunction();
+            if( subri != null )
+                subroutines.add(subri);
         }
-        catch( SyntaxError se ) {
-            System.err.println(se.getMessage());
-        }
+
+        return subroutines;
     }
 
     private Function parseDeclare() throws SyntaxError
@@ -332,14 +329,7 @@ public class Parser {
             return new Variable(varnam);
         }
 
-        if( lookahead.is(Token.Sub) ) {
-            String oper = lookahead.value;
-            lookahead = scan.next();
-            Expression subex = parseFactor();
-            return new Unary(oper, subex);
-        }
-
-        if( lookahead.is(Token.Not) ) {
+        if( lookahead.is(Token.Sub, Token.Not) ) {
             String oper = lookahead.value;
             lookahead = scan.next();
             Expression subex = parseFactor();

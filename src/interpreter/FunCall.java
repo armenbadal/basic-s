@@ -15,7 +15,7 @@ public class FunCall implements Expression {
     }
 
     @Override
-    public Constant evaluate( Environment env )
+    public Constant evaluate( Environment env ) throws RuntimeError
     {
         Environment envloc = new Environment();
 

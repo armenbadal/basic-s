@@ -12,7 +12,7 @@ public class Print implements Statement {
     }
 
     @Override
-    public void execute( Environment env )
+    public void execute( Environment env ) throws RuntimeError
     {
         Constant resv = priex.evaluate(env);
         System.out.println(resv.toString());

@@ -15,27 +15,16 @@ public class Environment {
         }
     }
 
-    private Stack<List<Pair>> scopes = null;
+    private List<Pair> scope = null;
 
     public Environment()
     {
-        scopes = new Stack<>();
-        newScope();
-    }
-
-    public void newScope()
-    {
-        scopes.add(new ArrayList<>());
-    }
-
-    public void popScope()
-    {
-        scopes.pop();
+        scope = new ArrayList<>();
     }
 
     public void add( String vr, Constant vl )
     {
-        scopes.peek().add(new Pair(vr,vl));
+        scope.add(new Pair(vr,vl));
     }
 
     public void update( String vr, Constant vl )
@@ -49,10 +38,9 @@ public class Environment {
 
     private Pair lookup( String vr )
     {
-        for( List<Pair> sci : scopes )
-            for( Pair pk : sci )
-                if( pk.name.equals(vr) )
-                    return pk;
+        for( Pair pk : scope )
+            if( pk.name.equals(vr) )
+                return pk;
         return null;
     }
 

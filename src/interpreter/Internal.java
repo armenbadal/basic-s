@@ -18,7 +18,7 @@ public class Internal implements Expression {
     }
 
     @Override
-    public Constant evaluate( Environment env )
+    public Constant evaluate( Environment env ) throws RuntimeError
     {
         if( name.equals("SQR") ) {
             Constant a0 = arguments.get(0).evaluate(env);
