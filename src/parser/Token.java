@@ -9,6 +9,7 @@ public enum Token {
     Declare,
     Function,
     End,
+    Dim,
     Input,
     Print,
     If,

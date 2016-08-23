@@ -19,6 +19,7 @@ public class Scanner {
         keywords.put("DECLARE", Token.Declare);
         keywords.put("FUNCTION", Token.Function);
         keywords.put("END", Token.End);
+        keywords.put("DIM", Token.Dim);
         keywords.put("INPUT", Token.Input);
         keywords.put("PRINT", Token.Print);
         keywords.put("IF", Token.If);
