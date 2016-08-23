@@ -46,9 +46,11 @@ public class Parser {
         match(Token.Function);
         String name = lookahead.value;
         match(Token.Identifier);
+        // TODO ստուգել ֆունկցիայի՝ դեռևս սահմանված չլինելը
         match(Token.LeftParen);
         List<String> params = new ArrayList<>();
         if( lookahead.is(Token.Identifier) ) {
+            // TODO ստուգել, որ պարամետրերի ցուցակում կրկնություններ չլինեն
             String varl = lookahead.value;
             match(Token.Identifier);
             params.add(varl);
@@ -226,28 +228,28 @@ public class Parser {
 
     private Expression parseConjunction() throws SyntaxError
     {
-        Expression exo = parseEquation();
+        Expression exo = parseEquality();
         while( lookahead.is(Token.And) ) {
             lookahead = scan.next();
-            Expression exi = parseEquation();
+            Expression exi = parseEquality();
             return new Binary("AND", exo, exi);
         }
         return exo;
     }
 
-    private Expression parseEquation() throws SyntaxError
+    private Expression parseEquality() throws SyntaxError
     {
-        Expression exo = parseRelation();
+        Expression exo = parseComparison();
         if( lookahead.is(Token.Eq, Token.Ne) ) {
             String oper = lookahead.value;
             lookahead = scan.next();
-            Expression exi = parseRelation();
+            Expression exi = parseComparison();
             exo = new Binary(oper, exo, exi);
         }
         return exo;
     }
 
-    private Expression parseRelation() throws SyntaxError
+    private Expression parseComparison() throws SyntaxError
     {
         Expression exo = parseAddition();
         if( lookahead.is(Token.Gt, Token.Ge, Token.Lt, Token.Le) ) {
@@ -324,6 +326,7 @@ public class Parser {
                 for( Function fi : subroutines )
                     if( fi.name.equals(varnam) )
                         func = fi;
+                // TODO ստուգել ֆունկցիայի պարամետրերի քանակի և փոխանցված արգումենտների քանակը
                 return new FunCall(func, argus);
             }
             return new Variable(varnam);
@@ -352,5 +355,6 @@ public class Parser {
             lookahead = scan.next();
         else
             throw new SyntaxError("Շարահյուսական սխալ։");
+        // TODO սխալի ավելի մանրամասն հաղորդագրություն
     }
 }
