@@ -29,6 +29,7 @@ public class Scanner {
         keywords.put("TO", Token.To);
         keywords.put("STEP", Token.Step);
         keywords.put("WHILE", Token.While);
+        keywords.put("CALL", Token.Call);
         keywords.put("AND", Token.And);
         keywords.put("OR", Token.Or);
         keywords.put("NOT", Token.Not);

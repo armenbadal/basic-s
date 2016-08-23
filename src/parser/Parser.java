@@ -208,6 +208,33 @@ public class Parser {
         return new WhileLoop(cond, bdy);
     }
 
+    private Statement parseCallSub() throws SyntaxError
+    {
+        match(Token.Call);
+        String subnam = lookahead.value;
+        match(Token.Identifier);
+        // TODO ստուգել ֆունկցիայի սահմանված կամ հայտարարված լինելը
+        ArrayList<Expression> argus = new ArrayList<>();
+        if( lookahead.is(Token.Number, Token.Identifier, Token.Sub, Token.Not, Token.LeftParen) ) {
+            Expression exi = parseDisjunction();
+            argus.add(exi);
+            while( lookahead.is(Token.Comma) ) {
+                lookahead = scan.next();
+                exi = parseDisjunction();
+                argus.add(exi);
+            }
+        }
+        parseNewLines();
+
+        Function func = null;
+        for( Function fi : subroutines )
+            if( fi.name.equals(subnam) )
+                func = fi;
+        // TODO ստուգել ֆունկցիայի պարամետրերի քանակի և փոխանցված արգումենտների քանակը
+
+        return new CallSubr(func, argus);
+    }
+
     private void parseNewLines() throws SyntaxError
     {
         match(Token.NewLine);
@@ -327,7 +354,7 @@ public class Parser {
                     if( fi.name.equals(varnam) )
                         func = fi;
                 // TODO ստուգել ֆունկցիայի պարամետրերի քանակի և փոխանցված արգումենտների քանակը
-                return new FunCall(func, argus);
+                return new ApplyFunc(func, argus);
             }
             return new Variable(varnam);
         }

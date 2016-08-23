@@ -19,6 +19,7 @@ public enum Token {
     To,
     Step,
     While,
+    Call,
 
     LeftParen,
     RightParen,
