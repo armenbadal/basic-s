@@ -167,7 +167,21 @@ __Նախապայմանով ցիկլի__ հրամանը սկսվում է `WHILE`
 Statement = 'WHILE' Disjunction NewLines { Statement NewLines } 'END' 'WHILE'.
 ````
 
-Օրինակ, `m` և `n` թվերի
+Օրինակ, `m` և `n` թվերի մեծագույն ընդհանուր բաժանարարը որոշելու համար 
+կարող ենք սահմանել հետևյալ ֆունկցիան.
+
+````
+FUNCTION Gcd(n, m)
+    WHILE n <> m
+        IF n > m THEN
+            n = n - m
+        ELSE
+            m = m - n
+        END IF
+    END WHILE
+    Gcd = n
+END FUNCTION
+````
 
 
 __Պրոցեդուրայի կանչ__ հրամանը, որ նախատեսված է ֆունկցիան որպես պրոցեդուրա
