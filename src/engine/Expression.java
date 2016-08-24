@@ -1,4 +1,4 @@
-package interpreter;
+package engine;
 
 /**/
 public interface Expression {
