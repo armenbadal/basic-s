@@ -2,11 +2,14 @@
 
 Բեյսիկ֊Փ լեզվի ինտերպրետատորի միջուկը բաղկացած է `Function` դասից (class), 
 `Statement` ինտերֆեյսն (interface) իրականացնող հրամանների դասերից և `Expression` 
-ինտերֆեյսն իրականացնող արտահայտությունների դասից։ Ինչպես նաև արտահայտությունների 
-_հաշվարկման_ ու հրամանների _կատարման_ միջավայրի `Enviromnent` դասից, և կատարման 
-ժամանակ հայտնաբերված սխալների `RuntimeError` դասից։
+ինտերֆեյսն իրականացնող արտահայտությունների դասից։ Բոլոր այս ինտերֆեյսներն ու 
+դասերը հավաքված են `engine` փաթեթում (package)։ Ըստ էության, այս դասերը 
+շարահյուսական վերլուծության արդյունքում կառուցվող _աբստրակտ քերականական ծառի_
+հանգույցների մոդելներն են։
 
-Բոլոր այս ինտերֆեյսներն ու դասերը հավաքված են `engine` փաթեթում (package)։
+`engine` փաթեթում են սահմանված նաև արտահայտությունների _հաշվարկման_ ու հրամանների 
+_կատարման_ միջավայրի `Enviromnent` դասից, և կատարման ժամանակ հայտնաբերված 
+սխալների `RuntimeError` դասից։
 
 
 ### Կատարման միջավայր
@@ -30,10 +33,30 @@ public interface Expression {
 
 ### Հրամանների մոդելները
 
+Բեյսիկ֊Փ լեզվի հրամաններն իրականացնում են `Statement` ինտերֆեյսը։
+
+````
+public interface Statement {
+    void execute( Environment env ) throws RuntimeError;
+}
+````
 
 ### Ֆունկցիայի մոդելը
 
+````
+public class Function {
+    public String name = null;
+    public List<String> parameters = null;
+    public Statement body = null;
 
+    public Function( String nm, List<String> pr, Statement bo )
+    {
+        name = nm;
+        parameters = pr;
+        body = bo;
+    }
+}
+````
 
 
 

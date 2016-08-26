@@ -2,5 +2,5 @@ package engine;
 
 /**/
 public interface Expression {
-    Constant evaluate(Environment env ) throws RuntimeError;
+    Constant evaluate( Environment env ) throws RuntimeError;
 }

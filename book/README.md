@@ -3,6 +3,6 @@
 1. [Ներածություն](introduction.md)
 2. [Բեյսիկ-Փ լեզուն](language.md)
 3. [Ինտերպրետատորի բաղադրիչները](components.md)
-4. [Վերլուծություն](parsing.md)
+4. [Շարահյուսական վերլուծություն](parsing.md)
 5. [Ինտերպրետացիա](interpretation.md)
 
