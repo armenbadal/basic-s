@@ -1,0 +1,6 @@
+
+FUNCTION Main()
+  FOR i = 32 TO 64 STEP 2
+    PRINT i^2
+  END FOR
+END FUNCTION

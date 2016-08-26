@@ -7,6 +7,9 @@ import parser.Parser;
 import parser.SyntaxError;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -17,7 +20,7 @@ public class Basic {
     {
         StringBuilder texter = new StringBuilder();
         try( BufferedReader read = new BufferedReader(new FileReader(filename)) ) {
-            read.lines().forEach(e -> texter.append(e + "\n"));
+            read.lines().forEach(e -> texter.append(e).append("\n"));
         }
         catch( Exception ex ) {
             System.err.println(ex.getMessage());
@@ -25,7 +28,7 @@ public class Basic {
 
         // վերլուծել
         Parser parser = new Parser(texter.toString());
-        List<Function> parsed = null;
+        List<Function> parsed;
         try {
             parsed = parser.parse();
         }
@@ -59,23 +62,29 @@ public class Basic {
         return true;
     }
 
-    private static void runCases( String... names )
+    private static void runTests()
     {
-        for( String nm : names ) {
-            System.out.printf("~ ~ ~ ~ ~ ~ ~ %s ~ ~ ~ ~ ~ ~ ~\n", nm);
-            Basic basic = new Basic();
-            basic.execute(String.format("cases/%s.bas", nm));
+        try {
+            Path dir = Paths.get("./cases");
+            for( Path nm : Files.newDirectoryStream(dir, "*.bas") ) {
+                System.out.printf("~ ~ ~ ~ ~ ~ ~ %s ~ ~ ~ ~ ~ ~ ~\n", nm);
+                Basic basic = new Basic();
+                basic.execute(nm.toString());
+            }
+        }
+        catch( IOException ex ) {
+            System.err.println(ex.getMessage());
         }
     }
 
     public static void main( String[] args )
     {
-        runCases(
-                //"test00",
-                //"test01",
-                "test02"
-        );
-
-        //System.exit(result ? 0 : 1);
+        if( args[0].equals("test") )
+            runTests();
+        else {
+            Basic basic = new Basic();
+            boolean result = basic.execute(args[0]);
+            System.exit(result ? 0 : 1);
+        }
     }
 }
