@@ -26,6 +26,6 @@ public class WhileLoop implements Statement {
     @Override
     public String toString()
     {
-        return String.format("WHILE %s\n%sEND WHILE");
+        return String.format("WHILE %s\n%sEND WHILE", condition, body);
     }
 }
