@@ -6,6 +6,7 @@ import engine.RuntimeError;
 import parser.Parser;
 import parser.SyntaxError;
 
+import java.io.*;
 import java.util.List;
 
 /**
@@ -14,11 +15,16 @@ import java.util.List;
 public class Basic {
     private boolean execute( String filename )
     {
-        String text = null;
-        // read contents of a file
+        StringBuilder texter = new StringBuilder();
+        try( BufferedReader read = new BufferedReader(new FileReader(filename)) ) {
+            read.lines().forEach(e -> texter.append(e + "\n"));
+        }
+        catch( Exception ex ) {
+            System.err.println(ex.getMessage());
+        }
 
         // վերլուծել
-        Parser parser = new Parser(text);
+        Parser parser = new Parser(texter.toString());
         List<Function> parsed = null;
         try {
             parsed = parser.parse();
@@ -53,11 +59,23 @@ public class Basic {
         return true;
     }
 
+    private static void runCases( String... names )
+    {
+        for( String nm : names ) {
+            System.out.printf("~ ~ ~ ~ ~ ~ ~ %s ~ ~ ~ ~ ~ ~ ~\n", nm);
+            Basic basic = new Basic();
+            basic.execute(String.format("cases/%s.bas", nm));
+        }
+    }
+
     public static void main( String[] args )
     {
-        Basic basic = new Basic();
-        boolean result = basic.execute(args[1]);
+        runCases(
+                //"test00",
+                //"test01",
+                "test02"
+        );
 
-        System.exit(result ? 0 : 1);
+        //System.exit(result ? 0 : 1);
     }
 }

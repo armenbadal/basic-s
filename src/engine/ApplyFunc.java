@@ -5,8 +5,8 @@ import java.util.List;
 
 /**/
 public class ApplyFunc implements Expression {
-    private Function function = null;
-    private List<Expression> arguments = null;
+    public Function function = null;
+    public List<Expression> arguments = null;
 
     public ApplyFunc( Function fu, List<Expression> ag )
     {

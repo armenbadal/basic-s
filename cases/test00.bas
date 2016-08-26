@@ -1,0 +1,8 @@
+
+FUNCTION f(x, y)
+  f = x + y
+END FUNCTION
+
+FUNCTION Main()
+  PRINT f(4,5)
+END FUNCTION

@@ -1,5 +1,6 @@
 package engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,5 +18,13 @@ public class CallSubr implements Statement {
     public void execute( Environment env ) throws RuntimeError
     {
         appsub.evaluate(env);
+    }
+
+    @Override
+    public String toString()
+    {
+        ArrayList<String> argis = new ArrayList<>();
+        appsub.arguments.forEach(e -> argis.add(e.toString()));
+        return String.format("CALL %s %s", appsub.function.name, String.join(", ", argis));
     }
 }

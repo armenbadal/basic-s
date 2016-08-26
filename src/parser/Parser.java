@@ -1,9 +1,11 @@
 package parser;
 
 import engine.*;
+import engine.Function;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.*;
 
 /**/
 public class Parser {
@@ -16,6 +18,9 @@ public class Parser {
     {
         scan = new Scanner(text + "@");
         lookahead = scan.next();
+        // բաց թողնել ֆայլի սկզբի դատարկ տողերը
+        while( lookahead.is(Token.NewLine) )
+            lookahead = scan.next();
     }
 
     public List<Function> parse() throws SyntaxError
@@ -28,8 +33,19 @@ public class Parser {
                 subri = parseDeclare();
             else if( lookahead.is(Token.Function) )
                 subri = parseFunction();
-            if( subri != null )
-                subroutines.add(subri);
+
+            // ավելացնել ֆունկցիաների ցուցակում,
+            // եթե դեռ ավելացված չէ
+            if( subri != null ) {
+                boolean defined = false;
+                for( Function si : subroutines )
+                    if( subri.name.equals(si.name) ) {
+                        defined = true;
+                        break;
+                    }
+                if( !defined )
+                    subroutines.add(subri);
+            }
         }
 
         return subroutines;
@@ -70,6 +86,11 @@ public class Parser {
     private Function parseFunction() throws SyntaxError
     {
         Function subr = parseFuncHeader();
+        for( Function si : subroutines )
+            if( subr.name.equals(si.name) ) {
+                subr = si;
+                break;
+            }
         subr.body = parseStatementList();
         match(Token.End);
         match(Token.Function);
@@ -81,7 +102,7 @@ public class Parser {
     private Statement parseStatementList() throws SyntaxError
     {
         Sequence seq = new Sequence();
-        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While) ) {
+        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While, Token.Call) ) {
             Statement sti = parseStatement();
             seq.add(sti);
         }
@@ -110,6 +131,9 @@ public class Parser {
                 break;
             case While:
                 stat = parseWhileLoop();
+                break;
+            case Call:
+                stat = parseCallSub();
                 break;
         }
         parseNewLines();
@@ -224,7 +248,6 @@ public class Parser {
                 argus.add(exi);
             }
         }
-        parseNewLines();
 
         Function func = null;
         for( Function fi : subroutines )
