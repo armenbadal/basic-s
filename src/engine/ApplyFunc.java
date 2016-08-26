@@ -20,7 +20,7 @@ public class ApplyFunc implements Expression {
         Environment envloc = new Environment();
 
         List<Constant> argvs = new ArrayList<>();
-        for (Expression eo : arguments)
+        for( Expression eo : arguments )
             argvs.add(eo.evaluate(env));
 
         int i = 0;

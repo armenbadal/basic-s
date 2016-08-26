@@ -33,22 +33,24 @@ public class Parser {
                 subri = parseDeclare();
             else if( lookahead.is(Token.Function) )
                 subri = parseFunction();
-
-            // ավելացնել ֆունկցիաների ցուցակում,
-            // եթե դեռ ավելացված չէ
-            if( subri != null ) {
-                boolean defined = false;
-                for( Function si : subroutines )
-                    if( subri.name.equals(si.name) ) {
-                        defined = true;
-                        break;
-                    }
-                if( !defined )
-                    subroutines.add(subri);
-            }
+            addSubroutine(subri);
         }
 
         return subroutines;
+    }
+
+    private void addSubroutine( Function su )
+    {
+        if( su != null ) {
+            boolean defined = false;
+            for( Function si : subroutines )
+                if( su.name.equals(si.name) ) {
+                    defined = true;
+                    break;
+                }
+            if( !defined )
+                subroutines.add(su);
+        }
     }
 
     private Function parseDeclare() throws SyntaxError
@@ -86,6 +88,7 @@ public class Parser {
     private Function parseFunction() throws SyntaxError
     {
         Function subr = parseFuncHeader();
+        addSubroutine(subr);
         for( Function si : subroutines )
             if( subr.name.equals(si.name) ) {
                 subr = si;
