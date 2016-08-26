@@ -1,20 +1,29 @@
 package engine;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Armen Badalian on 21.08.2016.
  */
 public class Internal implements Expression {
-    private String name = null;
-    private List<Expression> arguments = null;
+    private static String[] predefined = { "SQR", "ABS" };
 
     public static boolean isInternal( String nm )
     {
-        if( nm == "SQR" )
-            return true;
-
+        for( String ir : predefined )
+            if( nm.equals(ir) )
+                return true;
         return false;
+    }
+
+    private String name = null;
+    private List<Expression> arguments = null;
+
+    public Internal( String nm, List<Expression> ags )
+    {
+        name = nm;
+        arguments = ags;
     }
 
     @Override
@@ -25,6 +34,17 @@ public class Internal implements Expression {
             return new Constant(Math.sqrt(a0.value));
         }
 
+        if( name.equals("ABS") ) {
+            Constant a0 = arguments.get(0).evaluate(env);
+            return new Constant(Math.abs(a0.value));
+        }
+
         return null;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s(%s)", name, arguments.get(0));
     }
 }

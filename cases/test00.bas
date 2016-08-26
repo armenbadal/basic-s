@@ -1,8 +1,29 @@
 
-FUNCTION f(x, y)
-  f = x + y
-END FUNCTION
-
 FUNCTION Main()
-  PRINT f(4,5)
+
+  PRINT 0 AND 1
+  PRINT 1 AND 1
+  PRINT 0 OR 1
+  PRINT 1 OR 1
+  PRINT NOT 0
+  PRINT NOT 1
+
+  PRINT 12 + 4
+  PRINT 12 - 4
+  PRINT 12 * 4
+  PRINT 12 / 4
+
+  PRINT -4
+  PRINT -12 + 4
+  PRINT -12 - 4
+  PRINT -12 * 4
+  PRINT -12 / 4
+
+  PRINT 12 = 4
+  PRINT 12 <> 4
+  PRINT 12 > 4
+  PRINT 12 >= 4
+  PRINT 12 < 4
+  PRINT 12 <= 4
+
 END FUNCTION

@@ -39,7 +39,7 @@ public class Basic {
 
         if( parsed == null )
             return false;
-
+// for( Function si : parsed ) System.out.println(si);
         // որոնել Main անունով ֆունկցիան
         Function entry = null;
         for( Function sri : parsed )
@@ -69,7 +69,8 @@ public class Basic {
             for( Path nm : Files.newDirectoryStream(dir, "*.bas") ) {
                 System.out.printf("~ ~ ~ ~ ~ ~ ~ %s ~ ~ ~ ~ ~ ~ ~\n", nm);
                 Basic basic = new Basic();
-                basic.execute(nm.toString());
+                //if( nm.endsWith("test05.bas") )
+                    basic.execute(nm.toString());
             }
         }
         catch( IOException ex ) {

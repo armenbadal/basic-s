@@ -10,9 +10,12 @@ public class Variable implements Expression {
     }
 
     @Override
-    public Constant evaluate(Environment env )
+    public Constant evaluate( Environment env ) throws RuntimeError
     {
-        return env.get(name);
+        Constant val = env.get(name);
+        if( val == null )
+            throw new RuntimeError(String.format("Չսահմանված փոփոխական %s", name));
+        return val;
     }
 
     @Override

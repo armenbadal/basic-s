@@ -18,15 +18,15 @@ public class Unary implements Expression {
     {
         Constant res = subexpr.evaluate(env);
         if( operation.equals("-") )
-            res.value = -res.value;
+            res = new Constant(-res.value);
         else if( operation.equals("NOT") )
-            res.value = res.value == 0 ? 0 : 1;
+            res = new Constant(res.value != 0 ? 0 : 1);
         return res;
     }
 
     @Override
     public String toString()
     {
-        return String.format("%s%s", operation, subexpr);
+        return String.format("(%s %s)", operation, subexpr);
     }
 }

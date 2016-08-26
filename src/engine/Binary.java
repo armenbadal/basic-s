@@ -58,6 +58,12 @@ public class Binary implements Expression {
             case "<=":
                 resval = res0.value <= res1.value ? 1.0 : 0.0;
                 break;
+            case "AND":
+                resval = (res0.value != 0) && (res1.value != 0) ? 1.0 : 0.0;
+                break;
+            case "OR":
+                resval = (res0.value != 0) || (res1.value != 0) ? 1.0 : 0.0;
+                break;
         }
 
         return new Constant(resval);

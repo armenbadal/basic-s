@@ -183,6 +183,7 @@ public class Parser {
         while( lookahead.is(Token.ElseIf) ) {
             match(Token.ElseIf);
             Expression coe = parseDisjunction();
+            match(Token.Then);
             parseNewLines();
             Statement ste = parseStatementList();
             Branch bre = new Branch(coe, ste);
@@ -374,6 +375,9 @@ public class Parser {
                     }
                 }
                 match(Token.RightParen);
+                // ստուգել ներդրված ֆունկցիա լինելը
+                if( Internal.isInternal(varnam) )
+                    return new Internal(varnam, argus);
                 // գտնել հայտարարված կամ սահմանված ֆունկցիան
                 Function func = null;
                 for( Function fi : subroutines )
@@ -406,8 +410,10 @@ public class Parser {
     {
         if( lookahead.is(exp) )
             lookahead = scan.next();
-        else
-            throw new SyntaxError("Շարահյուսական սխալ։");
-        // TODO սխալի ավելի մանրամասն հաղորդագրություն
+        else {
+            String message = String.format("Շարահյուսական սխալ։ %d տողում սպասվում էր %s, բայց հանդիպել է %s",
+                    lookahead.line, exp, lookahead.kind);
+            throw new SyntaxError(message);
+        }
     }
 }
