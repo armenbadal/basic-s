@@ -1,8 +1,6 @@
 package engine;
 
-/**
- * Created by Armen Badalian on 21.08.2016.
- */
+/**/
 public class Print implements Statement {
     private Expression priex = null;
 

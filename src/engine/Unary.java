@@ -1,8 +1,6 @@
 package engine;
 
-/**
- * Created by Armen Badalian on 21.08.2016.
- */
+/**/
 public class Unary implements Expression {
     private String operation = null;
     private Expression subexpr = null;

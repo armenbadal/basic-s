@@ -8,11 +8,10 @@ public class Function {
     public List<String> parameters = null;
     public Statement body = null;
 
-    public Function( String nm, List<String> pr, Statement bo )
+    public Function( String nm, List<String> pr)
     {
         name = nm;
         parameters = pr;
-        body = bo;
     }
 
     @Override

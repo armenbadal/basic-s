@@ -1,13 +1,10 @@
 package engine;
 
-import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by Armen Badalian on 21.08.2016.
- */
+/**/
 public class Internal implements Expression {
-    private static String[] predefined = { "SQR", "ABS" };
+    private static final String[] predefined = { "SQR", "ABS" };
 
     public static boolean isInternal( String nm )
     {

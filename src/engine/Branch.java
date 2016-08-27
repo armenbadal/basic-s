@@ -1,8 +1,6 @@
 package engine;
 
-/**
- * Created by Armen Badalian on 21.08.2016.
- */
+/**/
 public class Branch implements Statement {
     private Expression condition = null;
     private Statement decision = null;

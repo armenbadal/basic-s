@@ -1,11 +1,9 @@
 package parser;
 
 import engine.*;
-import engine.Function;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.*;
 
 /**/
 public class Parser {
@@ -78,7 +76,7 @@ public class Parser {
         match(Token.RightParen);
         parseNewLines();
 
-        return new Function(name, params, null);
+        return new Function(name, params);
     }
 
     private Function parseFunction() throws SyntaxError
@@ -203,13 +201,13 @@ public class Parser {
         String prn = lookahead.value;
         match(Token.Identifier);
         match(Token.Eq);
-        Expression init = parseDisjunction(); // Addition ?
+        Expression init = parseDisjunction();
         match(Token.To);
-        Expression lim = parseDisjunction(); // Addition ?
+        Expression lim = parseDisjunction();
         Expression ste = null;
         if( lookahead.is(Token.Step) ) {
             match(Token.Step);
-            ste = parseDisjunction(); // Addition ?
+            ste = parseDisjunction();
         }
         parseNewLines();
         Statement bdy = parseStatementList();

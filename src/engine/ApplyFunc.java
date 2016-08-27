@@ -28,9 +28,7 @@ public class ApplyFunc implements Expression {
             envloc.add(pri, argvs.get(i++));
 
         function.body.execute(envloc);
-        Constant rval = envloc.get(function.name);
-
-        return rval;
+        return envloc.get(function.name);
     }
 
     @Override
