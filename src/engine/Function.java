@@ -16,6 +16,22 @@ public class Function {
     }
 
     @Override
+    public boolean equals( Object oj )
+    {
+        if( !(oj instanceof Function) )
+            return false;
+
+        Function of = (Function)oj;
+        if( !of.name.equals(name) )
+            return false;
+        if( of.parameters.size() != parameters.size() )
+            return false;
+        // TODO ստուգել նաև պարամետրերի անունները
+
+        return true;
+    }
+
+    @Override
     public String toString()
     {
         if( body == null )

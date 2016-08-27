@@ -12,9 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-/**
- * Created by Armen Badalian on 21.08.2016.
- */
+/**/
 public class Basic {
     private boolean execute( String filename )
     {
@@ -41,12 +39,9 @@ public class Basic {
             return false;
 // for( Function si : parsed ) System.out.println(si);
         // որոնել Main անունով ֆունկցիան
-        Function entry = null;
-        for( Function sri : parsed )
-            if( sri.name.equals("Main") ) {
-                entry = sri;
-                break;
-            }
+        Function entry = parsed.stream()
+                .filter(e -> e.name.equals("Main"))
+                .findFirst().get();
         if( entry == null )
             return false;
 

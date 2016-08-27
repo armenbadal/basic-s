@@ -41,16 +41,8 @@ public class Parser {
 
     private void addSubroutine( Function su )
     {
-        if( su != null ) {
-            boolean defined = false;
-            for( Function si : subroutines )
-                if( su.name.equals(si.name) ) {
-                    defined = true;
-                    break;
-                }
-            if( !defined )
-                subroutines.add(su);
-        }
+        if( su != null && !subroutines.contains(su) )
+            subroutines.add(su);
     }
 
     private Function parseDeclare() throws SyntaxError
@@ -65,12 +57,16 @@ public class Parser {
         String name = lookahead.value;
         match(Token.Identifier);
         // TODO ստուգել ֆունկցիայի՝ դեռևս սահմանված չլինելը
+//        for( Function si : subroutines )
+//            if( si.name.equals(name) )
+//                throw new SyntaxError(name + " անունով ֆունկցիան արդեն սահմանված է։");
         match(Token.LeftParen);
         List<String> params = new ArrayList<>();
         if( lookahead.is(Token.Identifier) ) {
-            // TODO ստուգել, որ պարամետրերի ցուցակում կրկնություններ չլինեն
             String varl = lookahead.value;
             match(Token.Identifier);
+            if( params.contains(varl) )
+                throw new SyntaxError(varl + " անունն արդեն կա պարամետրերի ցուցակում։");
             params.add(varl);
             while( lookahead.is(Token.Comma) ) {
                 match(Token.Comma);
@@ -89,11 +85,10 @@ public class Parser {
     {
         Function subr = parseFuncHeader();
         addSubroutine(subr);
-        for( Function si : subroutines )
-            if( subr.name.equals(si.name) ) {
-                subr = si;
-                break;
-            }
+        final String name = subr.name;
+        subr = subroutines.stream()
+                .filter(e -> e.name.equals(name))
+                .findFirst().get();
         subr.body = parseStatementList();
         match(Token.End);
         match(Token.Function);
@@ -253,11 +248,13 @@ public class Parser {
             }
         }
 
-        Function func = null;
-        for( Function fi : subroutines )
-            if( fi.name.equals(subnam) )
-                func = fi;
-        // TODO ստուգել ֆունկցիայի պարամետրերի քանակի և փոխանցված արգումենտների քանակը
+        Function func = subroutines.stream()
+                .filter(e -> e.name.equals(subnam))
+                .findFirst().get();
+
+        if( func.parameters.size() != argus.size() )
+            throw new SyntaxError(String.format("%s ֆունկցիան սպասում է %d պարամետրեր։",
+                    subnam, func.parameters.size()));
 
         return new CallSubr(func, argus);
     }
@@ -352,13 +349,13 @@ public class Parser {
 
     private Expression parseFactor() throws SyntaxError
     {
+        Expression result = null;
         if( lookahead.is(Token.Number) ) {
             double numval = Double.valueOf(lookahead.value);
             lookahead = scan.next();
-            return new Constant(numval);
+            result = new Constant(numval);
         }
-
-        if( lookahead.is(Token.Identifier) ) {
+        else if( lookahead.is(Token.Identifier) ) {
             String varnam = lookahead.value;
             lookahead = scan.next();
             if( lookahead.is(Token.LeftParen) ) {
@@ -379,31 +376,31 @@ public class Parser {
                 if( Internal.isInternal(varnam) )
                     return new Internal(varnam, argus);
                 // գտնել հայտարարված կամ սահմանված ֆունկցիան
-                Function func = null;
-                for( Function fi : subroutines )
-                    if( fi.name.equals(varnam) )
-                        func = fi;
-                // TODO ստուգել ֆունկցիայի պարամետրերի քանակի և փոխանցված արգումենտների քանակը
-                return new ApplyFunc(func, argus);
+                Function func = subroutines.stream()
+                        .filter(e -> e.name.equals(varnam))
+                        .findFirst().get();
+                // համեմատել ֆունկցիայի պարամետրերի և փոխանցված արգումենտների քանակը
+                if( func.parameters.size() != argus.size() )
+                    throw new SyntaxError(String.format("%s ֆունկցիան սպասում է %d պարամետրեր։",
+                            varnam, func.parameters.size()));
+                result = new ApplyFunc(func, argus);
             }
-            return new Variable(varnam);
+            else
+                result = new Variable(varnam);
         }
-
-        if( lookahead.is(Token.Sub, Token.Not) ) {
+        else if( lookahead.is(Token.Sub, Token.Not) ) {
             String oper = lookahead.value;
             lookahead = scan.next();
             Expression subex = parseFactor();
-            return new Unary(oper, subex);
+            result = new Unary(oper, subex);
         }
-
-        if( lookahead.is(Token.LeftParen) ) {
+        else if( lookahead.is(Token.LeftParen) ) {
             match(Token.LeftParen);
-            Expression expr = parseDisjunction();
+            result = parseDisjunction();
             match(Token.RightParen);
-            return expr;
         }
 
-        return null;
+        return result;
     }
 
     private void match( Token exp ) throws SyntaxError
