@@ -15,7 +15,7 @@ END FUNCTION
 
 FUNCTION Sqr(x)
   res = 1
- FOR i = 0 TO 100
+  FOR i = 0 TO 100
     res = (res + x/res)/2
   END FOR
   Sqr = res

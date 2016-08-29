@@ -37,7 +37,7 @@ public class Basic {
 
         if( parsed == null )
             return false;
-// for( Function si : parsed ) System.out.println(si);
+
         // որոնել Main անունով ֆունկցիան
         Function entry = parsed.stream()
                 .filter(e -> e.name.equals("Main"))

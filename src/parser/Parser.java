@@ -31,7 +31,8 @@ public class Parser {
                 subri = parseDeclare();
             else if( lookahead.is(Token.Function) )
                 subri = parseFunction();
-            addSubroutine(subri);
+            if( subri != null )
+                addSubroutine(subri);
         }
 
         return subroutines;
@@ -39,7 +40,7 @@ public class Parser {
 
     private void addSubroutine( Function su )
     {
-        if( su != null && !subroutines.contains(su) )
+        if( !subroutines.contains(su) )
             subroutines.add(su);
     }
 
@@ -54,10 +55,12 @@ public class Parser {
         match(Token.Function);
         String name = lookahead.value;
         match(Token.Identifier);
-        // TODO ստուգել ֆունկցիայի՝ դեռևս սահմանված չլինելը
-//        for( Function si : subroutines )
-//            if( si.name.equals(name) )
-//                throw new SyntaxError(name + " անունով ֆունկցիան արդեն սահմանված է։");
+
+        // ստուգել ֆունկցիայի՝ դեռևս սահմանված չլինելը
+        for( Function si : subroutines )
+            if( si.name.equals(name) && si.body != null )
+                throw new SyntaxError(name + " անունով ֆունկցիան արդեն սահմանված է։");
+
         match(Token.LeftParen);
         List<String> params = new ArrayList<>();
         if( lookahead.is(Token.Identifier) ) {
@@ -98,6 +101,7 @@ public class Parser {
     private Statement parseStatementList() throws SyntaxError
     {
         Sequence seq = new Sequence();
+        // FIRST(Statement)
         while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While, Token.Call) ) {
             Statement sti = parseStatement();
             seq.add(sti);
