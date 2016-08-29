@@ -6,9 +6,9 @@ import java.util.*;
 public class Environment {
     private class Pair {
         public String name = null;
-        public Constant value = null;
+        public Value value = null;
 
-        public Pair( String nm, Constant vl )
+        public Pair( String nm, Value vl )
         {
             name = nm;
             value = vl;
@@ -22,12 +22,12 @@ public class Environment {
         scope = new ArrayList<>();
     }
 
-    public void add( String vr, Constant vl )
+    public void add( String vr, Value vl )
     {
         scope.add(new Pair(vr,vl));
     }
 
-    public void update( String vr, Constant vl )
+    public void update( String vr, Value vl )
     {
         Pair pki = lookup(vr);
         if( pki == null )
@@ -44,7 +44,7 @@ public class Environment {
         return null;
     }
 
-    public Constant get(String var )
+    public Value get(String var )
     {
         Pair pri = lookup(var);
         return pri != null ? pri.value : null;

@@ -1,10 +1,9 @@
 package engine;
 
 /**/
-public class Value {
+public class Value implements Expression {
     public static final char REAL = 'R';
     public static final char TEXT = 'T';
-    public static final char ARRAY = 'A';
 
     public char kind = REAL;
     public double real = 0.0;
@@ -20,6 +19,12 @@ public class Value {
     {
         kind = TEXT;
         text = vl;
+    }
+
+    @Override
+    public Value evaluate( Environment env ) throws RuntimeError
+    {
+        return this;
     }
 
     @Override

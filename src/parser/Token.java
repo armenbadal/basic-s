@@ -4,6 +4,7 @@ package parser;
 public enum Token {
     Unknown,
     Number,
+    Text,
     Identifier,
 
     Declare,

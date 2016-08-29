@@ -355,7 +355,12 @@ public class Parser {
         if( lookahead.is(Token.Number) ) {
             double numval = Double.valueOf(lookahead.value);
             lookahead = scan.next();
-            result = new Constant(numval);
+            result = new Value(numval);
+        }
+        else if( lookahead.is(Token.Text) ) {
+            String textval = lookahead.value;
+            lookahead = scan.next();
+            result = new Value(textval);
         }
         else if( lookahead.is(Token.Identifier) ) {
             String varnam = lookahead.value;
@@ -375,8 +380,8 @@ public class Parser {
                 }
                 match(Token.RightParen);
                 // ստուգել ներդրված ֆունկցիա լինելը
-                if( Internal.isInternal(varnam) )
-                    return new Internal(varnam, argus);
+                if( BuiltIn.isInternal(varnam) )
+                    return new BuiltIn(varnam, argus);
                 // գտնել հայտարարված կամ սահմանված ֆունկցիան
                 Function func = subroutines.stream()
                         .filter(e -> e.name.equals(varnam))

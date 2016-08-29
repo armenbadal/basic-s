@@ -14,57 +14,57 @@ public class Binary implements Expression {
     }
 
     @Override
-    public Constant evaluate(Environment env ) throws RuntimeError
+    public Value evaluate(Environment env ) throws RuntimeError
     {
-        Constant res0 = subexpro.evaluate(env);
-        Constant res1 = subexpri.evaluate(env);
+        Value res0 = subexpro.evaluate(env);
+        Value res1 = subexpri.evaluate(env);
 
         double resval = 0.0;
         switch( operation ) {
             case "+":
-                resval = res0.value + res1.value;
+                resval = res0.real + res1.real;
                 break;
             case "-":
-                resval = res0.value - res1.value;
+                resval = res0.real - res1.real;
                 break;
             case "*":
-                resval = res0.value * res1.value;
+                resval = res0.real * res1.real;
                 break;
             case "/":
-                if( res1.value == 0.0 )
+                if( res1.real == 0.0 )
                     throw new RuntimeError("Բաժանում զրոյի վրա։");
-                resval = res0.value / res1.value;
+                resval = res0.real / res1.real;
                 break;
             case "^":
-                resval = Math.pow(res0.value, res1.value);
+                resval = Math.pow(res0.real, res1.real);
                 break;
             case "=":
-                resval = res0.value == res1.value ? 1.0 : 0.0;
+                resval = res0.real == res1.real ? 1.0 : 0.0;
                 break;
             case "<>":
-                resval = res0.value != res1.value ? 1.0 : 0.0;
+                resval = res0.real != res1.real ? 1.0 : 0.0;
                 break;
             case ">":
-                resval = res0.value > res1.value ? 1.0 : 0.0;
+                resval = res0.real > res1.real ? 1.0 : 0.0;
                 break;
             case ">=":
-                resval = res0.value >= res1.value ? 1.0 : 0.0;
+                resval = res0.real >= res1.real ? 1.0 : 0.0;
                 break;
             case "<":
-                resval = res0.value < res1.value ? 1.0 : 0.0;
+                resval = res0.real < res1.real ? 1.0 : 0.0;
                 break;
             case "<=":
-                resval = res0.value <= res1.value ? 1.0 : 0.0;
+                resval = res0.real <= res1.real ? 1.0 : 0.0;
                 break;
             case "AND":
-                resval = (res0.value != 0) && (res1.value != 0) ? 1.0 : 0.0;
+                resval = (res0.real != 0) && (res1.real != 0) ? 1.0 : 0.0;
                 break;
             case "OR":
-                resval = (res0.value != 0) || (res1.value != 0) ? 1.0 : 0.0;
+                resval = (res0.real != 0) || (res1.real != 0) ? 1.0 : 0.0;
                 break;
         }
 
-        return new Constant(resval);
+        return new Value(resval);
     }
 
     @Override

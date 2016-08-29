@@ -3,7 +3,7 @@ package engine;
 import java.util.List;
 
 /**/
-public class Internal implements Expression {
+public class BuiltIn implements Expression {
     private static final String[] predefined = { "SQR", "ABS" };
 
     public static boolean isInternal( String nm )
@@ -17,23 +17,23 @@ public class Internal implements Expression {
     private String name = null;
     private List<Expression> arguments = null;
 
-    public Internal( String nm, List<Expression> ags )
+    public BuiltIn(String nm, List<Expression> ags )
     {
         name = nm;
         arguments = ags;
     }
 
     @Override
-    public Constant evaluate( Environment env ) throws RuntimeError
+    public Value evaluate(Environment env ) throws RuntimeError
     {
         if( name.equals("SQR") ) {
-            Constant a0 = arguments.get(0).evaluate(env);
-            return new Constant(Math.sqrt(a0.value));
+            Value a0 = arguments.get(0).evaluate(env);
+            return new Value(Math.sqrt(a0.real));
         }
 
         if( name.equals("ABS") ) {
-            Constant a0 = arguments.get(0).evaluate(env);
-            return new Constant(Math.abs(a0.value));
+            Value a0 = arguments.get(0).evaluate(env);
+            return new Value(Math.abs(a0.real));
         }
 
         return null;

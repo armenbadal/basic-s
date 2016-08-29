@@ -14,7 +14,7 @@ public class Input implements Statement {
     {
         java.util.Scanner scan = new java.util.Scanner(System.in);
         double value = scan.nextDouble();
-        env.update(varname, new Constant(value));
+        env.update(varname, new Value(value));
     }
 
     @Override

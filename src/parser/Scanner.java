@@ -69,6 +69,16 @@ public class Scanner {
         if( Character.isDigit(ch) )
             return numericLiteral();
 
+        // տողային լիտերալ
+        if( ch == '"' ) {
+            int begin = position;
+            ch = source[begin];
+            while( ch != '"' )
+                ch = source[position++];
+            String vl = String.copyValueOf(source, begin, position - begin);
+            return new Lexeme(Token.Text, vl, line);
+        }
+
         // մետասիմվոլներ կամ գործողություններ
         if( ch == '\n' )
             return new Lexeme(Token.NewLine, line++);

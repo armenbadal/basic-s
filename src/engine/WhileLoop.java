@@ -14,8 +14,8 @@ public class WhileLoop implements Statement {
     @Override
     public void execute( Environment env ) throws RuntimeError
     {
-        Constant cond = condition.evaluate(env);
-        while( cond.value != 0.0 ) {
+        Value cond = condition.evaluate(env);
+        while( cond.real != 0.0 ) {
             body.execute(env);
             cond = condition.evaluate(env);
         }

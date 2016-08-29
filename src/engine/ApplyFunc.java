@@ -15,11 +15,11 @@ public class ApplyFunc implements Expression {
     }
 
     @Override
-    public Constant evaluate( Environment env ) throws RuntimeError
+    public Value evaluate(Environment env ) throws RuntimeError
     {
         Environment envloc = new Environment();
 
-        List<Constant> argvs = new ArrayList<>();
+        List<Value> argvs = new ArrayList<>();
         for( Expression eo : arguments )
             argvs.add(eo.evaluate(env));
 

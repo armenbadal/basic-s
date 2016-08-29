@@ -14,7 +14,7 @@ public class Assignment implements Statement {
     @Override
     public void execute( Environment env ) throws RuntimeError
     {
-        Constant val = valu.evaluate(env);
+        Value val = valu.evaluate(env);
         env.update(varnm, val);
     }
 

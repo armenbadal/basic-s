@@ -12,13 +12,13 @@ public class Unary implements Expression {
     }
 
     @Override
-    public Constant evaluate(Environment env ) throws RuntimeError
+    public Value evaluate(Environment env ) throws RuntimeError
     {
-        Constant res = subexpr.evaluate(env);
+        Value res = subexpr.evaluate(env);
         if( operation.equals("-") )
-            res = new Constant(-res.value);
+            res = new Value(-res.real);
         else if( operation.equals("NOT") )
-            res = new Constant(res.value != 0 ? 0 : 1);
+            res = new Value(res.real != 0 ? 0 : 1);
         return res;
     }
 

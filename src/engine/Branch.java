@@ -21,8 +21,8 @@ public class Branch implements Statement {
     @Override
     public void execute( Environment env ) throws RuntimeError
     {
-        Constant conval = condition.evaluate(env);
-        if( conval.value != 0.0 )
+        Value conval = condition.evaluate(env);
+        if( conval.real != 0.0 )
             decision.execute(env);
         else {
             if( alternative != null )

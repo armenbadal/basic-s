@@ -20,18 +20,18 @@ public class ForLoop implements Statement {
     @Override
     public void execute( Environment env ) throws RuntimeError
     {
-        Constant vi = initial.evaluate(env);
-        Constant vb = limit.evaluate(env);
-        Constant sp = new Constant(1);
+        Value vi = initial.evaluate(env);
+        Value vb = limit.evaluate(env);
+        Value sp = new Value(1);
         if( step != null )
             sp = step.evaluate(env);
 
-        double prv = vi.value;
+        double prv = vi.real;
         env.update(param, vi);
-        while( prv <=  vb.value ) {
+        while( prv <=  vb.real ) {
             body.execute(env);
-            prv += sp.value;
-            env.update(param, new Constant(prv));
+            prv += sp.real;
+            env.update(param, new Value(prv));
         }
     }
 
