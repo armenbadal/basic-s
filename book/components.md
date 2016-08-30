@@ -61,14 +61,63 @@ public class Value implements Expression {
         kind = TEXT;
         text = vl;
     }
+    
+    // ...
 }
 ````
 
+(Թերևս ավելի ճիշտ կլիներ ծրտագրի տեքստում օգտագործվող իրական թվերի և տեքստային 
+հաստատունների համար սահմանել `Expression` ինտերֆեյսն իրականացնող համապատասխան 
+դասեր, իսկ `Value` դասը պահել որպես ունիվերսալ արժեքի ներկայացում։)
+
+
 #### Փոփոխական
+
+`Variable` դասը ծրագրի տեքստում հանդիպող անունների մոդելն է։ Այն կարող է հղվել
+իրական (թվային) և տողային արժեքների վրա։ Եթե ծրագրի տեքստում փոփոխականի անունին
+կցված է `$` վերջածանցը, ապա տվյալ անունը կարող է հղվել տողային արժեքների, 
+հակառակ դեպքում՝ իրական թվային։
+
+````
+public class Variable implements Expression {
+    public static final char REAL = 'R';
+    public static final char TEXT = 'T';
+
+    public String name = null;
+    public char type = REAL;
+
+    public Variable( String na )
+    {
+        type = na.endsWith("$") ? TEXT : REAL;
+        name = na;
+    }
+
+    // ...
+}
+````
 
 
 #### Ունար գործողություններ
 
+`Unary` դասը «պատասխանատու» է իրական թվի բացասման `-` և տրամաբանական 
+ժխտման `NOT` գործողությունների համար։ `operation` դաշտը գործողության
+տեքստային աանվանումն է, իսկ `subexpr` դաշտը՝ այն արտահայտությունը, 
+որի նկատմամբ պետք է կիրառել տրված գործողությունը։ 
+
+````
+public class Unary implements Expression {
+    private String operation = null;
+    private Expression subexpr = null;
+
+    public Unary( String op, Expression se )
+    {
+        operation = op;
+        subexpr = se;
+    }
+
+    // ...
+ }
+````
 
 #### Բինար գործողություններ
 

@@ -64,7 +64,7 @@ public class Basic {
             for( Path nm : Files.newDirectoryStream(dir, "*.bas") ) {
                 System.out.printf("~ ~ ~ ~ ~ ~ ~ %s ~ ~ ~ ~ ~ ~ ~\n", nm);
                 Basic basic = new Basic();
-                //if( nm.endsWith("test05.bas") )
+                if( nm.endsWith("test06.bas") )
                     basic.execute(nm.toString());
             }
         }

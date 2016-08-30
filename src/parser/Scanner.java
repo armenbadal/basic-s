@@ -146,7 +146,8 @@ public class Scanner {
         char ch = source[begin];
         while( Character.isLetterOrDigit(ch) )
             ch = source[position++];
-        --position;
+        if( ch != '$' )
+            --position;
         String vl = String.copyValueOf(source, begin, position - begin);
         Token kd = keywords.getOrDefault(vl, Token.Identifier);
         return new Lexeme(kd, vl, line);

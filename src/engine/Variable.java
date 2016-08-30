@@ -2,10 +2,15 @@ package engine;
 
 /**/
 public class Variable implements Expression {
-    private String name = null;
+    public static final char REAL = 'R';
+    public static final char TEXT = 'T';
+
+    public String name = null;
+    public char type = REAL;
 
     public Variable( String na )
     {
+        type = na.endsWith("$") ? TEXT : REAL;
         name = na;
     }
 
