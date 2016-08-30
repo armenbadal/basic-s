@@ -36,6 +36,11 @@ public class BuiltIn implements Expression {
             return new Value(Math.abs(a0.real));
         }
 
+        if( name.equals("SIN") ) {
+            Value a0 = arguments.get(0).evaluate(env);
+            return new Value(Math.sin(a0.real));
+        }
+
         return null;
     }
 
