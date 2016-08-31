@@ -1,0 +1,5 @@
+
+FUNCTION Main()
+  DIM a(5)
+  '
+END FUNCTION

@@ -102,7 +102,7 @@ public class Parser {
     {
         Sequence seq = new Sequence();
         // FIRST(Statement)
-        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While, Token.Call) ) {
+        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While, Token.Call, Token.Dim) ) {
             Statement sti = parseStatement();
             seq.add(sti);
         }
@@ -134,6 +134,9 @@ public class Parser {
                 break;
             case Call:
                 stat = parseCallSub();
+                break;
+            case Dim:
+                stat = parseDim();
                 break;
         }
         parseNewLines();
@@ -263,6 +266,21 @@ public class Parser {
         return new CallSubr(func, argus);
     }
 
+    private Statement parseDim() throws SyntaxError
+    {
+        match(Token.Dim);
+        String name = lookahead.value;
+        match(Token.Identifier);
+        match(Token.LeftParen);
+        String strsz = lookahead.value;
+        match(Token.Number);
+        match(Token.RightParen);
+
+        Variable var = new Variable(name);
+        double size = Double.valueOf(strsz);
+        return new Dim(var, (int)size);
+    }
+
     private void parseNewLines() throws SyntaxError
     {
         match(Token.NewLine);
@@ -357,12 +375,12 @@ public class Parser {
         if( lookahead.is(Token.Number) ) {
             double numval = Double.valueOf(lookahead.value);
             lookahead = scan.next();
-            result = new Value(numval);
+            result = new Real(numval);
         }
         else if( lookahead.is(Token.Text) ) {
             String textval = lookahead.value;
             lookahead = scan.next();
-            result = new Value(textval);
+            result = new Text(textval);
         }
         else if( lookahead.is(Token.Identifier) ) {
             String varnam = lookahead.value;

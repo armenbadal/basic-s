@@ -1,13 +1,16 @@
 package engine;
 
 /**/
-public class Value implements Expression {
+public class Value {
     public static final char REAL = 'R';
     public static final char TEXT = 'T';
+    public static final char ARRAY = 'A';
 
     public char kind = REAL;
+
     public double real = 0.0;
     public String text = null;
+    public Array array = null;
 
     public Value( double vl )
     {
@@ -19,6 +22,12 @@ public class Value implements Expression {
     {
         kind = TEXT;
         text = vl;
+    }
+
+    public Value( Array vl )
+    {
+        kind = ARRAY;
+        array = vl;
     }
 
     public Value calculate( String oper ) throws RuntimeError
@@ -55,12 +64,6 @@ public class Value implements Expression {
         // TODO իրականացնել բինար գործողությունները
 
         return null;
-    }
-
-    @Override
-    public Value evaluate( Environment env ) throws RuntimeError
-    {
-        return this;
     }
 
     @Override
