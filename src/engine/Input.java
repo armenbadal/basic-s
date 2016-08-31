@@ -2,9 +2,9 @@ package engine;
 
 /**/
 public class Input implements Statement {
-    private String varname = null;
+    private Variable varname = null;
 
-    public Input( String vn )
+    public Input( Variable vn )
     {
         varname = vn;
     }

@@ -5,10 +5,10 @@ import java.util.*;
 /**/
 public class Environment {
     private class Pair {
-        public String name = null;
+        public Variable name = null;
         public Value value = null;
 
-        public Pair( String nm, Value vl )
+        public Pair( Variable nm, Value vl )
         {
             name = nm;
             value = vl;
@@ -22,12 +22,12 @@ public class Environment {
         scope = new ArrayList<>();
     }
 
-    public void add( String vr, Value vl )
+    public void add( Variable vr, Value vl )
     {
         scope.add(new Pair(vr,vl));
     }
 
-    public void update( String vr, Value vl )
+    public void update( Variable vr, Value vl )
     {
         Pair pki = lookup(vr);
         if( pki == null )
@@ -36,7 +36,7 @@ public class Environment {
             pki.value = vl;
     }
 
-    private Pair lookup( String vr )
+    private Pair lookup( Variable vr )
     {
         for( Pair pk : scope )
             if( pk.name.equals(vr) )
@@ -44,7 +44,7 @@ public class Environment {
         return null;
     }
 
-    public Value get(String var )
+    public Value get( Variable var )
     {
         Pair pri = lookup(var);
         return pri != null ? pri.value : null;

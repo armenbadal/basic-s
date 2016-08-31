@@ -24,11 +24,11 @@ public class ApplyFunc implements Expression {
             argvs.add(eo.evaluate(env));
 
         int i = 0;
-        for( String pri : function.parameters )
+        for( Variable pri : function.parameters )
             envloc.add(pri, argvs.get(i++));
 
         function.body.execute(envloc);
-        return envloc.get(function.name);
+        return envloc.get(new Variable(function.name));
     }
 
     @Override

@@ -2,12 +2,12 @@ package engine;
 
 /**/
 public class Assignment implements Statement {
-    private String varnm = null;
+    private Variable vari = null;
     private Expression valu = null;
 
-    public Assignment(String vn, Expression vl )
+    public Assignment( Variable vn, Expression vl )
     {
-        varnm = vn;
+        vari = vn;
         valu = vl;
     }
 
@@ -15,12 +15,12 @@ public class Assignment implements Statement {
     public void execute( Environment env ) throws RuntimeError
     {
         Value val = valu.evaluate(env);
-        env.update(varnm, val);
+        env.update(vari, val);
     }
 
     @Override
     public String toString()
     {
-        return String.format("%s = %s", varnm, valu);
+        return String.format("%s = %s", vari, valu);
     }
 }

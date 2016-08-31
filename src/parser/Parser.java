@@ -62,16 +62,16 @@ public class Parser {
                 throw new SyntaxError(name + " անունով ֆունկցիան արդեն սահմանված է։");
 
         match(Token.LeftParen);
-        List<String> params = new ArrayList<>();
+        List<Variable> params = new ArrayList<>();
         if( lookahead.is(Token.Identifier) ) {
-            String varl = lookahead.value;
+            Variable varl = new Variable(lookahead.value);
             match(Token.Identifier);
             if( params.contains(varl) )
                 throw new SyntaxError(varl + " անունն արդեն կա պարամետրերի ցուցակում։");
             params.add(varl);
             while( lookahead.is(Token.Comma) ) {
                 match(Token.Comma);
-                varl = lookahead.value;
+                varl = new Variable(lookahead.value);
                 match(Token.Identifier);
                 params.add(varl);
             }
@@ -148,7 +148,7 @@ public class Parser {
         match(Token.Eq);
         Expression exl = parseDisjunction();
 
-        return new Assignment(varl, exl);
+        return new Assignment(new Variable(varl), exl);
     }
 
     private Statement parseInput() throws SyntaxError
@@ -157,7 +157,7 @@ public class Parser {
         String varn = lookahead.value;
         match(Token.Identifier);
 
-        return new Input(varn);
+        return new Input(new Variable(varn));
     }
 
     private Statement parsePrint() throws SyntaxError
@@ -202,8 +202,10 @@ public class Parser {
     private Statement parseForLoop() throws SyntaxError
     {
         match(Token.For);
-        String prn = lookahead.value;
+        Variable prn = new Variable(lookahead.value);
         match(Token.Identifier);
+        if( prn.isText() )
+            throw new SyntaxError("FOR ցիկլի պարամետրը պետք է լինի թվային։");
         match(Token.Eq);
         Expression init = parseDisjunction();
         match(Token.To);

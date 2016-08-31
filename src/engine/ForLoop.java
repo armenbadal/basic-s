@@ -2,13 +2,13 @@ package engine;
 
 /**/
 public class ForLoop implements Statement {
-    private String param = null;
+    private Variable param = null;
     private Expression initial = null;
     private Expression limit = null;
     private Expression step = null;
     private Statement body = null;
 
-    public ForLoop( String pr, Expression in, Expression li, Expression sp, Statement be )
+    public ForLoop( Variable pr, Expression in, Expression li, Expression sp, Statement be )
     {
         param = pr;
         initial = in;
