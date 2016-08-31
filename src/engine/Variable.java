@@ -7,16 +7,28 @@ public class Variable implements Expression {
 
     public String name = null;
     public char type = REAL;
+    public Expression index = null;
 
     public Variable( String na )
     {
+        this(na, null);
+    }
+
+    public Variable( String na, Expression ix )
+    {
         type = REAL;
         name = na;
+        index = ix;
 
         if( isText() ) {
             type = TEXT;
             name = name.substring(0, name.length() - 1);
         }
+    }
+
+    public boolean isElement()
+    {
+        return index != null;
     }
 
     public boolean isText()

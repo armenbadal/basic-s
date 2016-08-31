@@ -3,7 +3,9 @@ package parser;
 import engine.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**/
 public class Parser {
@@ -11,6 +13,7 @@ public class Parser {
     private Lexeme lookahead = null;
 
     private List<Function> subroutines = null;
+    private Map<String,String> symbols = null;
 
     public Parser( String text )
     {
@@ -24,6 +27,7 @@ public class Parser {
     public List<Function> parse() throws SyntaxError
     {
         subroutines = new ArrayList<>();
+        symbols = new HashMap<>();
 
         while( lookahead.is(Token.Declare, Token.Function) ) {
             Function subri = null;
@@ -148,10 +152,19 @@ public class Parser {
     {
         String varl = lookahead.value;
         match(Token.Identifier);
+        // երբ  վերագրվում է զանգվածի տարրին
+        Expression einx = null;
+        if( lookahead.is(Token.LeftParen) ) {
+            match(Token.LeftParen);
+            einx = parseDisjunction();
+            match(Token.RightParen);
+        }
         match(Token.Eq);
         Expression exl = parseDisjunction();
 
-        return new Assignment(new Variable(varl), exl);
+        // TODO նոր անուն ավելացնել symbols-ում
+        // TODO ստուգել փոփխականի տիպը
+        return new Assignment(new Variable(varl, einx), exl);
     }
 
     private Statement parseInput() throws SyntaxError
@@ -278,6 +291,7 @@ public class Parser {
 
         Variable var = new Variable(name);
         double size = Double.valueOf(strsz);
+        symbols.put(name, "ARRAY"); // ?
         return new Dim(var, (int)size);
     }
 
