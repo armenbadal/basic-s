@@ -28,9 +28,13 @@ public class Value implements Expression {
             throw new RuntimeError(message);
         }
 
-        // TODO իրականացնել ունար գործողությունները
+        if( oper.equals("-") )
+            return new Value(-real);
 
-        return null;
+        if( oper.equals("NOT") )
+            return new Value(real == 0 ? 1 : 0);
+
+        return this;
     }
 
     public Value calculate( String oper, Value vlo ) throws RuntimeError
