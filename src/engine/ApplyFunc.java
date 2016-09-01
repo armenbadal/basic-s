@@ -15,7 +15,7 @@ public class ApplyFunc implements Expression {
     }
 
     @Override
-    public Value evaluate(Environment env ) throws RuntimeError
+    public Value evaluate( Environment env ) throws RuntimeError
     {
         Environment envloc = new Environment();
 

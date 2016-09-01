@@ -15,7 +15,14 @@ public class Assignment implements Statement {
     public void execute( Environment env ) throws RuntimeError
     {
         Value val = valu.evaluate(env);
-        env.update(vari, val);
+
+        if( vari.isElement() ) {
+            Array arv = env.get(vari).array;
+            Value ix = vari.index.evaluate(env);
+            arv.set((int)ix.real, val);
+        }
+        else
+            env.update(vari, val);
     }
 
     @Override
