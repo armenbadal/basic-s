@@ -106,7 +106,8 @@ public class Parser {
     {
         Sequence seq = new Sequence();
         // FIRST(Statement)
-        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If, Token.For, Token.While, Token.Call, Token.Dim) ) {
+        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If,
+                Token.For, Token.While, Token.Call, Token.Dim, Token.Let) ) {
             Statement sti = parseStatement();
             seq.add(sti);
         }
@@ -118,6 +119,7 @@ public class Parser {
     {
         Statement stat = null;
         switch( lookahead.kind ) {
+            case Let:
             case Identifier:
                 stat = parseAssignment();
                 break;
@@ -150,6 +152,8 @@ public class Parser {
 
     private Statement parseAssignment() throws ParseError
     {
+        if( lookahead.is(Token.Let) )
+            match(Token.Let);
         String varl = lookahead.value;
         match(Token.Identifier);
         // երբ  վերագրվում է զանգվածի տարրին
@@ -164,7 +168,7 @@ public class Parser {
 
         // TODO նոր անուն ավելացնել symbols-ում
         // TODO ստուգել փոփխականի տիպը
-        return new Assignment(new Variable(varl, einx), exl);
+        return new Let(new Variable(varl, einx), exl);
     }
 
     private Statement parseInput() throws ParseError
@@ -191,15 +195,15 @@ public class Parser {
         match(Token.Then);
         parseNewLines();
         Statement thenp = parseStatementList();
-        Branch statbr = new Branch(cond, thenp);
-        Branch bi = statbr;
+        If statbr = new If(cond, thenp);
+        If bi = statbr;
         while( lookahead.is(Token.ElseIf) ) {
             match(Token.ElseIf);
             Expression coe = parseDisjunction();
             match(Token.Then);
             parseNewLines();
             Statement ste = parseStatementList();
-            Branch bre = new Branch(coe, ste);
+            If bre = new If(coe, ste);
             bi.setElse(bre);
             bi = bre;
         }
@@ -236,7 +240,7 @@ public class Parser {
         match(Token.End);
         match(Token.For);
 
-        return new ForLoop(prn, init, lim, ste, bdy);
+        return new For(prn, init, lim, ste, bdy);
     }
 
     private Statement parseWhileLoop() throws ParseError
@@ -248,7 +252,7 @@ public class Parser {
         match(Token.End);
         match(Token.While);
 
-        return new WhileLoop(cond, bdy);
+        return new While(cond, bdy);
     }
 
     private Statement parseCallSub() throws ParseError
@@ -276,7 +280,7 @@ public class Parser {
             throw new ParseError("%s ֆունկցիան սպասում է %d պարամետրեր։",
                     subnam, func.parameters.size());
 
-        return new CallSubr(func, argus);
+        return new Call(func, argus);
     }
 
     private Statement parseDim() throws ParseError

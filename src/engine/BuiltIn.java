@@ -4,7 +4,8 @@ import java.util.List;
 
 /**/
 public class BuiltIn implements Expression {
-    private static final String[] predefined = { "SQR", "ABS" };
+    private static final String[] predefined =
+            { "SQR", "ABS", "SIN" };
 
     public static boolean isInternal( String nm )
     {
@@ -17,7 +18,7 @@ public class BuiltIn implements Expression {
     private String name = null;
     private List<Expression> arguments = null;
 
-    public BuiltIn(String nm, List<Expression> ags )
+    public BuiltIn( String nm, List<Expression> ags )
     {
         name = nm;
         arguments = ags;

@@ -1,11 +1,11 @@
 package engine;
 
 /**/
-public class WhileLoop implements Statement {
+public class While implements Statement {
     private Expression condition = null;
     private Statement body = null;
 
-    public WhileLoop( Expression cond, Statement bdy )
+    public While(Expression cond, Statement bdy )
     {
         condition = cond;
         body = bdy;

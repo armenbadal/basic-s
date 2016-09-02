@@ -1,12 +1,12 @@
 package engine;
 
 /**/
-public class Branch implements Statement {
+public class If implements Statement {
     private Expression condition = null;
     private Statement decision = null;
     private Statement alternative = null;
 
-    public Branch( Expression co, Statement de )
+    public If(Expression co, Statement de )
     {
         condition = co;
         decision = de;

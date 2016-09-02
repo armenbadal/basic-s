@@ -1,11 +1,11 @@
 package engine;
 
 /**/
-public class Assignment implements Statement {
+public class Let implements Statement {
     private Variable vari = null;
     private Expression valu = null;
 
-    public Assignment( Variable vn, Expression vl )
+    public Let(Variable vn, Expression vl )
     {
         vari = vn;
         valu = vl;

@@ -11,6 +11,7 @@ public enum Token {
     Function,
     End,
     Dim,
+    Let,
     Input,
     Print,
     If,

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**/
-public class CallSubr implements Statement {
+public class Call implements Statement {
     private ApplyFunc appsub = null;
 
-    public CallSubr(Function fu, List<Expression> ag )
+    public Call(Function fu, List<Expression> ag )
     {
         appsub = new ApplyFunc(fu, ag);
     }
