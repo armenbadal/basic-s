@@ -2,8 +2,8 @@ package engine;
 
 /**/
 public class RuntimeError extends Throwable {
-    public RuntimeError( String msg )
+    public RuntimeError( String msg, Object... els )
     {
-        super(msg);
+        super(String.format(msg, els));
     }
 }

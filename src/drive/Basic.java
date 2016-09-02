@@ -4,7 +4,7 @@ import engine.Environment;
 import engine.Function;
 import engine.RuntimeError;
 import parser.Parser;
-import parser.SyntaxError;
+import parser.ParseError;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,7 +30,7 @@ public class Basic {
         try {
             parsed = parser.parse();
         }
-        catch( SyntaxError se ) {
+        catch( ParseError se ) {
             System.err.println(se.getMessage());
             return false;
         }

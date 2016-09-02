@@ -24,7 +24,7 @@ public class Parser {
             lookahead = scan.next();
     }
 
-    public List<Function> parse() throws SyntaxError
+    public List<Function> parse() throws ParseError
     {
         subroutines = new ArrayList<>();
         symbols = new HashMap<>();
@@ -48,13 +48,13 @@ public class Parser {
             subroutines.add(su);
     }
 
-    private Function parseDeclare() throws SyntaxError
+    private Function parseDeclare() throws ParseError
     {
         match(Token.Declare);
         return parseFuncHeader();
     }
 
-    private Function parseFuncHeader() throws SyntaxError
+    private Function parseFuncHeader() throws ParseError
     {
         match(Token.Function);
         String name = lookahead.value;
@@ -63,7 +63,7 @@ public class Parser {
         // ստուգել ֆունկցիայի՝ դեռևս սահմանված չլինելը
         for( Function si : subroutines )
             if( si.name.equals(name) && si.body != null )
-                throw new SyntaxError(name + " անունով ֆունկցիան արդեն սահմանված է։");
+                throw new ParseError(name + " անունով ֆունկցիան արդեն սահմանված է։");
 
         match(Token.LeftParen);
         List<Variable> params = new ArrayList<>();
@@ -71,7 +71,7 @@ public class Parser {
             Variable varl = new Variable(lookahead.value);
             match(Token.Identifier);
             if( params.contains(varl) )
-                throw new SyntaxError(varl + " անունն արդեն կա պարամետրերի ցուցակում։");
+                throw new ParseError(varl + " անունն արդեն կա պարամետրերի ցուցակում։");
             params.add(varl);
             while( lookahead.is(Token.Comma) ) {
                 match(Token.Comma);
@@ -86,7 +86,7 @@ public class Parser {
         return new Function(name, params);
     }
 
-    private Function parseFunction() throws SyntaxError
+    private Function parseFunction() throws ParseError
     {
         Function subr = parseFuncHeader();
         addSubroutine(subr);
@@ -102,7 +102,7 @@ public class Parser {
         return subr;
     }
 
-    private Statement parseStatementList() throws SyntaxError
+    private Statement parseStatementList() throws ParseError
     {
         Sequence seq = new Sequence();
         // FIRST(Statement)
@@ -114,7 +114,7 @@ public class Parser {
         return seq;
     }
 
-    private Statement parseStatement() throws SyntaxError
+    private Statement parseStatement() throws ParseError
     {
         Statement stat = null;
         switch( lookahead.kind ) {
@@ -148,7 +148,7 @@ public class Parser {
         return stat;
     }
 
-    private Statement parseAssignment() throws SyntaxError
+    private Statement parseAssignment() throws ParseError
     {
         String varl = lookahead.value;
         match(Token.Identifier);
@@ -167,7 +167,7 @@ public class Parser {
         return new Assignment(new Variable(varl, einx), exl);
     }
 
-    private Statement parseInput() throws SyntaxError
+    private Statement parseInput() throws ParseError
     {
         match(Token.Input);
         String varn = lookahead.value;
@@ -176,7 +176,7 @@ public class Parser {
         return new Input(new Variable(varn));
     }
 
-    private Statement parsePrint() throws SyntaxError
+    private Statement parsePrint() throws ParseError
     {
         match(Token.Print);
         Expression exo = parseDisjunction();
@@ -184,7 +184,7 @@ public class Parser {
         return new Print(exo);
     }
 
-    private Statement parseConditional() throws SyntaxError
+    private Statement parseConditional() throws ParseError
     {
         match(Token.If);
         Expression cond = parseDisjunction();
@@ -215,13 +215,13 @@ public class Parser {
         return statbr;
     }
 
-    private Statement parseForLoop() throws SyntaxError
+    private Statement parseForLoop() throws ParseError
     {
         match(Token.For);
         Variable prn = new Variable(lookahead.value);
         match(Token.Identifier);
         if( prn.isText() )
-            throw new SyntaxError("FOR ցիկլի պարամետրը պետք է լինի թվային։");
+            throw new ParseError("FOR ցիկլի պարամետրը պետք է լինի թվային։");
         match(Token.Eq);
         Expression init = parseDisjunction();
         match(Token.To);
@@ -239,7 +239,7 @@ public class Parser {
         return new ForLoop(prn, init, lim, ste, bdy);
     }
 
-    private Statement parseWhileLoop() throws SyntaxError
+    private Statement parseWhileLoop() throws ParseError
     {
         match(Token.While);
         Expression cond = parseDisjunction();
@@ -251,7 +251,7 @@ public class Parser {
         return new WhileLoop(cond, bdy);
     }
 
-    private Statement parseCallSub() throws SyntaxError
+    private Statement parseCallSub() throws ParseError
     {
         match(Token.Call);
         String subnam = lookahead.value;
@@ -273,13 +273,13 @@ public class Parser {
                 .findFirst().get();
 
         if( func.parameters.size() != argus.size() )
-            throw new SyntaxError(String.format("%s ֆունկցիան սպասում է %d պարամետրեր։",
-                    subnam, func.parameters.size()));
+            throw new ParseError("%s ֆունկցիան սպասում է %d պարամետրեր։",
+                    subnam, func.parameters.size());
 
         return new CallSubr(func, argus);
     }
 
-    private Statement parseDim() throws SyntaxError
+    private Statement parseDim() throws ParseError
     {
         match(Token.Dim);
         String name = lookahead.value;
@@ -295,14 +295,14 @@ public class Parser {
         return new Dim(var, (int)size);
     }
 
-    private void parseNewLines() throws SyntaxError
+    private void parseNewLines() throws ParseError
     {
         match(Token.NewLine);
         while( lookahead.is(Token.NewLine) )
             lookahead = scan.next();
     }
 
-    private Expression parseDisjunction() throws SyntaxError
+    private Expression parseDisjunction() throws ParseError
     {
         Expression exo = parseConjunction();
         while( lookahead.is(Token.Or) ) {
@@ -313,7 +313,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseConjunction() throws SyntaxError
+    private Expression parseConjunction() throws ParseError
     {
         Expression exo = parseEquality();
         while( lookahead.is(Token.And) ) {
@@ -324,7 +324,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseEquality() throws SyntaxError
+    private Expression parseEquality() throws ParseError
     {
         Expression exo = parseComparison();
         if( lookahead.is(Token.Eq, Token.Ne) ) {
@@ -336,7 +336,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseComparison() throws SyntaxError
+    private Expression parseComparison() throws ParseError
     {
         Expression exo = parseAddition();
         if( lookahead.is(Token.Gt, Token.Ge, Token.Lt, Token.Le) ) {
@@ -348,7 +348,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseAddition() throws SyntaxError
+    private Expression parseAddition() throws ParseError
     {
         Expression exo = parseMultiplication();
         while( lookahead.is(Token.Add, Token.Sub) ) {
@@ -360,7 +360,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseMultiplication() throws SyntaxError
+    private Expression parseMultiplication() throws ParseError
     {
         Expression exo = parsePower();
         while( lookahead.is(Token.Mul, Token.Div) ) {
@@ -372,7 +372,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parsePower() throws SyntaxError
+    private Expression parsePower() throws ParseError
     {
         Expression exo = parseFactor();
         if( lookahead.is(Token.Power) ) {
@@ -383,7 +383,7 @@ public class Parser {
         return exo;
     }
 
-    private Expression parseFactor() throws SyntaxError
+    private Expression parseFactor() throws ParseError
     {
         Expression result = null;
         if( lookahead.is(Token.Number) ) {
@@ -422,8 +422,8 @@ public class Parser {
                         .findFirst().get();
                 // համեմատել ֆունկցիայի պարամետրերի և փոխանցված արգումենտների քանակը
                 if( func.parameters.size() != argus.size() )
-                    throw new SyntaxError(String.format("%s ֆունկցիան սպասում է %d պարամետրեր։",
-                            varnam, func.parameters.size()));
+                    throw new ParseError("%s ֆունկցիան սպասում է %d պարամետրեր։",
+                            varnam, func.parameters.size());
                 result = new ApplyFunc(func, argus);
             }
             else
@@ -444,14 +444,12 @@ public class Parser {
         return result;
     }
 
-    private void match( Token exp ) throws SyntaxError
+    private void match( Token exp ) throws ParseError
     {
         if( lookahead.is(exp) )
             lookahead = scan.next();
-        else {
-            String message = String.format("Շարահյուսական սխալ։ %d տողում սպասվում էր %s, բայց հանդիպել է %s",
+        else
+            throw new ParseError("Շարահյուսական սխալ։ %d տողում սպասվում էր %s, բայց հանդիպել է %s",
                     lookahead.line, exp, lookahead.kind);
-            throw new SyntaxError(message);
-        }
     }
 }

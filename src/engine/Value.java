@@ -32,10 +32,8 @@ public class Value {
 
     public Value calculate( String oper ) throws RuntimeError
     {
-        if( kind == TEXT ) {
-            String message = String.format("Տողի համար %s գործողություն սահմանված չէ։", oper);
-            throw new RuntimeError(message);
-        }
+        if( kind == TEXT )
+            throw new RuntimeError("Տողի համար %s գործողություն սահմանված չէ։", oper);
 
         if( oper.equals("-") )
             return new Value(-real);
@@ -52,14 +50,11 @@ public class Value {
             if( oper.equals("+") )
                 return new Value(text + vlo.text);
 
-            String message = String.format("Տեքստերի համար %s գործողությունը սահմանված չէ։", oper);
-            throw new RuntimeError(message);
+            throw new RuntimeError("Տեքստերի համար %s գործողությունը սահմանված չէ։", oper);
         }
 
-        if( kind != REAL || vlo.kind != REAL ) {
-            String message = String.format("%s գործողության օպերանդները համաձայնեցված չեն։", oper);
-            throw new RuntimeError(message);
-        }
+        if( kind != REAL || vlo.kind != REAL )
+            throw new RuntimeError("%s գործողության օպերանդները համաձայնեցված չեն։", oper);
 
         // TODO իրականացնել բինար գործողությունները
 
