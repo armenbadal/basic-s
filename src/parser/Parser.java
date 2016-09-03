@@ -93,7 +93,8 @@ public class Parser {
         final String name = subr.name;
         subr = subroutines.stream()
                 .filter(e -> e.name.equals(name))
-                .findFirst().get();
+                .findFirst()
+                .get();
         subr.body = parseStatementList();
         match(Token.End);
         match(Token.Function);

@@ -344,10 +344,16 @@ public class Input implements Statement {
 
 ### Ֆունկցիայի մոդելը
 
+Բեյսիկ-Փ լեզվով գրված ֆունկցիան որոշվում է անունով, պարամետրերի ցուցակով և մարմինը 
+կազմող հրամաններով։ `Function` դասը ֆունկցիայի մոդելն է. դրա `name` դաշտը անունն 
+է, `parameters` դաշտը պարամետրերի ցուցակը և `body` դաշտն էլ՝ մարմինը։ 
+Կոնստրուկտորը սպասում է միայն ֆունցկայի անունն ու պարամետրերի ցուցակը, քանի որ
+`Function` օբյեկտ է կառուցվում և՛ ֆունկցիան հայտարարելիս (`DECLARE`), և՛ սահմանելիս։
+
 ````
 public class Function {
     public String name = null;
-    public List<String> parameters = null;
+    public List<Variable> parameters = null;
     public Statement body = null;
 
     public Function( String nm, List<String> pr )

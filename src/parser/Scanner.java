@@ -5,16 +5,8 @@ import java.util.Map;
 
 /**/
 public class Scanner {
-    private char[] source = null;
-    private int position = 0;
-
-    public int line = 1;
-
-    private Map<String,Token> keywords = null;
-
-    //
-    public Scanner( String text )
-    {
+    private static Map<String,Token> keywords = null;
+    static {
         keywords = new HashMap<>();
         keywords.put("DECLARE", Token.Declare);
         keywords.put("FUNCTION", Token.Function);
@@ -35,7 +27,16 @@ public class Scanner {
         keywords.put("AND", Token.And);
         keywords.put("OR", Token.Or);
         keywords.put("NOT", Token.Not);
+    }
 
+    private char[] source = null;
+    private int position = 0;
+
+    public int line = 1;
+
+    //
+    public Scanner( String text )
+    {
         source = text.toCharArray();
     }
 
@@ -71,14 +72,8 @@ public class Scanner {
             return numericLiteral();
 
         // տողային լիտերալ
-        if( ch == '"' ) {
-            int begin = position;
-            ch = source[begin];
-            while( ch != '"' )
-                ch = source[position++];
-            String vl = String.copyValueOf(source, begin, position - begin);
-            return new Lexeme(Token.Text, vl, line);
-        }
+        if( ch == '"' )
+            return textLiteral();
 
         // մետասիմվոլներ կամ գործողություններ
         if( ch == '\n' )
@@ -169,5 +164,15 @@ public class Scanner {
         --position;
         String vl = String.copyValueOf(source, begin, position - begin);
         return new Lexeme(Token.Number, vl, line);
+    }
+
+    private Lexeme textLiteral()
+    {
+        int begin = position;
+        char ch = source[begin];
+        while( ch != '"' )
+            ch = source[position++];
+        String vl = String.copyValueOf(source, begin, position - begin);
+        return new Lexeme(Token.Text, vl, line);
     }
 }
