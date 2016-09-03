@@ -5,11 +5,11 @@ import java.util.List;
 
 /**/
 public class Call implements Statement {
-    private ApplyFunc appsub = null;
+    private Apply appsub = null;
 
     public Call(Function fu, List<Expression> ag )
     {
-        appsub = new ApplyFunc(fu, ag);
+        appsub = new Apply(fu, ag);
     }
 
     @Override

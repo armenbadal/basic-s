@@ -255,15 +255,15 @@ public class BuiltIn implements Expression {
 `ABS` — որշել թվի բացարձակ արժեքը և այլն։
 
 Ծրագրորդի սահմանած ֆունկցիաների կիրառումները ներկայացնելու համար նախատեսված 
-է `ApplyFunc` դասը։ Դրա `function` անդամը հղում է սահմանված ֆունկցիային, իսկ
+է `Apply` դասը։ Դրա `function` անդամը հղում է սահմանված ֆունկցիային, իսկ
 `arguments` անդամը արգումենտների ցուցակն է։
 
 ````
-public class ApplyFunc implements Expression {
+public class Apply implements Expression {
     public Function function = null;
     public List<Expression> arguments = null;
 
-    public ApplyFunc( Function fu, List<Expression> ag )
+    public Apply( Function fu, List<Expression> ag )
     {
         function = fu;
         arguments = ag;
@@ -289,7 +289,44 @@ public interface Statement {
 
 #### Վերագրում
 
+Վերագրման հրամանի մոդելը `Let` դասն է, որի `vari` անդամը վերագրման _տեղն_ է,
+իսկ `valu` անդամը՝ _վերագրվող_ արտահայտությունը։
+
+````
+public class Let implements Statement {
+    private Variable vari = null;
+    private Expression valu = null;
+
+    public Let(Variable vn, Expression vl )
+    {
+        vari = vn;
+        valu = vl;
+    }
+    // ...
+}
+````
+
 #### Տվյալների ներմուծում
+
+Ներմուծման ստանդարտ հոսքից տվյալները փոփոխականի մեջ կարդալու `INPUT` հրամանը
+մոլելավորված է `Input` դասով։ Դրա `varname` անդամն այն փոփոխականն է, որին 
+կատարման միջավայրում պետք է կապվի ներմուծման հոսքից կարդացած արժեքը։ 
+
+````
+public class Input implements Statement {
+    private Variable varname = null;
+
+    public Input( Variable vn )
+    {
+        varname = vn;
+    }
+    // ...
+}
+````
+
+> BASIC լեզուներում `INPUT` հրամանի արգումենտում կարելի է թվարկել մեկից ավելի 
+փոփոխականներ։ Ընթերցողին եմ թողնում այդ հնարավորության իրականացումը։
+
 
 #### Տվյալների արտածում
 
@@ -313,11 +350,11 @@ public class Function {
     public List<String> parameters = null;
     public Statement body = null;
 
-    public Function( String nm, List<String> pr, Statement bo )
+    public Function( String nm, List<String> pr )
     {
         name = nm;
         parameters = pr;
-        body = bo;
     }
+    // ...
 }
 ````

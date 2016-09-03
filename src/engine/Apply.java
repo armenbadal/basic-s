@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**/
-public class ApplyFunc implements Expression {
+public class Apply implements Expression {
     public Function function = null;
     public List<Expression> arguments = null;
 
-    public ApplyFunc( Function fu, List<Expression> ag )
+    public Apply(Function fu, List<Expression> ag )
     {
         function = fu;
         arguments = ag;

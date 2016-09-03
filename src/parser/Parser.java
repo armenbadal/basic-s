@@ -428,7 +428,7 @@ public class Parser {
                 if( func.parameters.size() != argus.size() )
                     throw new ParseError("%s ֆունկցիան սպասում է %d պարամետրեր։",
                             varnam, func.parameters.size());
-                result = new ApplyFunc(func, argus);
+                result = new Apply(func, argus);
             }
             else
                 result = new Variable(varnam);
