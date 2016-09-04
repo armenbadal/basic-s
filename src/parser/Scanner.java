@@ -45,7 +45,7 @@ public class Scanner {
     {
         char ch = source[position++];
 
-        // բացատներ
+        // անտեսել բացատները
         while( ch == ' ' || ch == '\t' )
             ch = source[position++];
 

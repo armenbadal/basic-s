@@ -100,6 +100,116 @@ public enum Token {
 
 ````
 
+Վերադառնամ `Scanner` դասին։ Արդեն մի քանի անգամ նշեցի, որ այն պետք է կարողանա
+_ճանաչել_ Բեյսիկ-Փ լեզվի քերականության տերմինալային սիմվոլների բազմությունը, որի 
+ենթաբազմություն է ծառայողական բառերի բազմությունը։ `keywords` ստատիկ անդամը,
+որը `String`→`Token` արտապատկերում է, `Scanner` դասի ստատիկ արժեքավորման 
+բլոկում լրացվում է ծառայողական բառերի ու դրանց համապատասխան թոքենների զույգերով։
+
+````
+public class Scanner {
+    // ...
+    private static Map<String,Token> keywords = null;
+    static {
+        keywords = new HashMap<>();
+        keywords.put("DECLARE", Token.Declare);
+        keywords.put("FUNCTION", Token.Function);
+        keywords.put("END", Token.End);
+        keywords.put("LET", Token.Let);
+        keywords.put("INPUT", Token.Input);
+        keywords.put("PRINT", Token.Print);
+        keywords.put("IF", Token.If);
+        keywords.put("THEN", Token.Then);
+        keywords.put("ELSEIF", Token.ElseIf);
+        keywords.put("ELSE", Token.Else);
+        keywords.put("FOR", Token.For);
+        keywords.put("TO", Token.To);
+        keywords.put("STEP", Token.Step);
+        keywords.put("WHILE", Token.While);
+        keywords.put("CALL", Token.Call);
+        keywords.put("AND", Token.And);
+        keywords.put("OR", Token.Or);
+        keywords.put("NOT", Token.Not);
+    }
+    // ...
+}
+````
+
+`Scanner` դասի կոնստրուկտորը վերցնում է վերլուծվող տեքստը, դրանից ստանում է նիշերի (`char`)
+զանգված և վերագրում է դասի `source` անդամին։ `position` անդամը հերթական դիտարկվող նիշն է,
+իսկ `line` անդամն էլ՝ հերթական տողը։
+
+````
+public class Scanner {
+    // ...
+    private char[] source = null;
+    private int position = 0;
+
+    public int line = 1;
+
+    public Scanner( String text )
+    {
+        source = text.toCharArray();
+    }
+    // ...
+}
+````
+
+Հիմա ամենագլխավորի՝ `next()` մեթոդի մասին։ Արդեն նշեցի, որ այն տեքստից (ավելի ճիշտ՝ `source`
+զանգվածից) կարդում և վերադարձնում է հերթական լեքսեմ-թոքեն զույգը։ `next()` մեթոդը, ինչպես 
+ընդունված է բառային վերլուծիչներում, աշխատում է  _վերջավոր ավտոմատի_ մոդելավորման սկզբունքով.
+կարդում է հերթական սիմվոլը, դրանով որոշում է, թե ինչ հաջորդականություն պետք է կարդա, կարդում
+է այդ հաջորդականությունը և վերադարձնում է համապատասխան `Lexeme` օբյեկտը։ Բացի այդ, `next()`
+մեթոդի պարտականությունն է նաև ակրդալ ու անտեսել տեքստում հանդիպող բացատանիշերն ու Բեյսիկ-Փ
+լեզվի մեկնաբանությունները։ Հետևյալ հատվածում ցուցադրված են այդ առաջին քայլերը.
+
+````
+public Lexeme next()
+{
+    char ch = source[position++];
+
+    // անտեսել բացատները
+    while( ch == ' ' || ch == '\t' )
+        ch = source[position++];
+
+    // հոսքի ավարտ
+    if( position == source.length )
+        return new Lexeme(Token.Eos, line);
+        
+    // մեկնաբանություն
+    if( ch == '\'' ) {
+        do
+            ch = source[position++];
+        while( ch != '\n' );
+        --position;
+
+        return next();
+    }
+    // ...
+}      
+````
+
+Հաջորդ հատվածում 
+
+````
+public Lexeme next()
+{
+    // ...
+    // ծառայողական բառեր և իդենտիֆիկատոր
+    if( Character.isLetter(ch) )
+        return keywordOrIdentifier();
+
+    // թվային լիտերալ
+    if( Character.isDigit(ch) )
+        return numericLiteral();
+
+    // տողային լիտերալ
+    if( ch == '"' )
+        return textLiteral();
+    // ...
+}      
+````
+
 ### Վերլուծության ռեկուրսիվ վայրէջքի եղանակ
 
 
@@ -122,7 +232,7 @@ Factor = '(' Expr ')'
 է մի պրոցեդուրա, որի մարմինը ձևավորվում է քերականական կանոնի ձախ կողմի անդամների 
 շղթայից։ Եթե հերթական սիմվոլը ոչ տերմինալ է, ապա կանչվում է դրան համապատասխան 
 պրոցեդուրան։ Եթե տերմինալային սիմվոլ է, ապա բառային անալիզատորից կարդացվում է 
-հերթական թոքենը։ Օրինակ, `Expr` ոչ տերմինալը դահմանող կանոնի համար պետք է գրել
+հերթական թոքենը։ Օրինակ, `Expr` ոչ տերմինալը սահմանող կանոնի համար պետք է գրել
 հետևյալը.
 
 ````
