@@ -212,6 +212,10 @@ public Lexeme next()
 }      
 ````
 
+Ծառայողական բառերն ու իդենտիֆիկատորները կարդում է `keywordOrIdentifier()` մեթոդը։
+Հերթական իդենտիֆիկատորը կարդալուց հետո այն որոնվում է `keywords` ցուցակում։ Եթե 
+առկա է, ապա վերադարձվում է ծառայողական բառին համապատասխան լեքսեմը, հակառակ
+դեպքում՝ իդենտիֆիկատորին համապատասխան լեքսեմը։
 
 
 ````
@@ -228,6 +232,42 @@ private Lexeme keywordOrIdentifier()
     return new Lexeme(kd, vl, line);
 }
 ````
+
+Թվային լիտերալն այստեղ իրականացրել եմ իր ամենապարզ տեսքով. `[0-9]+(.[0-9]+)?`։
+`numericLiteral()` մեթոդը կարդում է այդ տեսքի թվային (իրական) լիտերալները։
+
+````
+private Lexeme numericLiteral()
+{
+    int begin = position - 1;
+    char ch = source[begin];
+    while( Character.isDigit(ch) )
+        ch = source[position++];
+    if( ch == '.' ) {
+        ch = source[position++];
+        while( Character.isDigit(ch) )
+            ch = source[position++];
+    }
+    --position;
+    String vl = String.copyValueOf(source, begin, position - begin);
+    return new Lexeme(Token.Number, vl, line);
+}
+````
+
+
+
+````
+private Lexeme textLiteral()
+{
+    int begin = position;
+    char ch = source[begin];
+    while( ch != '"' )
+        ch = source[position++];
+    String vl = String.copyValueOf(source, begin, position - begin);
+    return new Lexeme(Token.Text, vl, line);
+}
+````
+
 
 ### Վերլուծության ռեկուրսիվ վայրէջքի եղանակ
 
