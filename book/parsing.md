@@ -189,7 +189,9 @@ public Lexeme next()
 }      
 ````
 
-Հաջորդ հատվածում 
+Հաջորդ հատվածում ծառայողական բառերի ու իդենտիֆիկատորների, ինչպես նաև թվային
+ու տեքստային լիտերալների վերլուծությունն է։ Դրանցից յուրաքանչյուրի համար ես 
+առանձին մեթոդ եմ գրել։
 
 ````
 public Lexeme next()
@@ -208,6 +210,23 @@ public Lexeme next()
         return textLiteral();
     // ...
 }      
+````
+
+
+
+````
+private Lexeme keywordOrIdentifier()
+{
+    int begin = position - 1;
+    char ch = source[begin];
+    while( Character.isLetterOrDigit(ch) )
+        ch = source[position++];
+    if( ch != '$' )
+        --position;
+    String vl = String.copyValueOf(source, begin, position - begin);
+    Token kd = keywords.getOrDefault(vl, Token.Identifier);
+    return new Lexeme(kd, vl, line);
+}
 ````
 
 ### Վերլուծության ռեկուրսիվ վայրէջքի եղանակ
