@@ -356,7 +356,7 @@ public class Parser {
     private Expression parseAddition() throws ParseError
     {
         Expression exo = parseMultiplication();
-        while( lookahead.is(Token.Add, Token.Sub) ) {
+        while( lookahead.is(Token.Add, Token.Sub, Token.Ampersand) ) {
             String oper = lookahead.value;
             lookahead = scan.next();
             Expression exi = parseMultiplication();

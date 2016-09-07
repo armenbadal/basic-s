@@ -47,7 +47,7 @@ public class Value {
     public Value calculate( String oper, Value vlo ) throws RuntimeError
     {
         if( kind == TEXT && vlo.kind == TEXT ) {
-            if( oper.equals("+") )
+            if( oper.equals("&") )
                 return new Value(text + vlo.text);
 
             throw new RuntimeError("Տեքստերի համար %s գործողությունը սահմանված չէ։", oper);

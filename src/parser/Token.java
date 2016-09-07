@@ -46,6 +46,8 @@ public enum Token {
     Div,
     Power,
 
+    Ampersand,
+
     NewLine,
 
     Eos
