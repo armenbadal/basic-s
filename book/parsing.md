@@ -254,7 +254,12 @@ private Lexeme numericLiteral()
 }
 ````
 
-
+Տեքստային լիտերալները սկսվում և ավարտվում են զույգ չակերտով (`"`) և կարող են 
+պարունակել կամայական նիշեր՝ բացի չակերտից։ `textLiteral()` մեթոդը կարդում է 
+տեքստային մեկ տեքստային լիտերալ և վերադարձնում է համապատասխան `Lexeme` օբյեկտ։
+(Ընթերցողին ուզում եմ հուշել, որ այս մեթոդում թերություն (bug) կա․ թույլատրվում 
+է տեքստային լիտերալում կարդալ նոր տողի անցման նիշը։ Նախ՝ դա չի համապատասխանում 
+BASIC֊ի կանոններն, ապա՝ խառնում է տողերի հաշիվը։) 
 
 ````
 private Lexeme textLiteral()
@@ -268,6 +273,62 @@ private Lexeme textLiteral()
 }
 ````
 
+`Scanner` դասի `next()` մեթոդի հաջորդ բլոկում մշակվում են համեմատման 
+ գործողությունների նիշերը։ Այստեղ բացատրելու բան էլ չկա։
+ 
+ ````
+public Lexeme next()
+{
+    // ...
+    // >, >=
+    if( ch == '>' ) {
+        ch = source[position++];
+        if( ch == '=' )
+            return new Lexeme(Token.Ge, ">=", line);
+        else
+            --position;
+        return new Lexeme(Token.Gt, ">", line);
+    }
+
+    // <, <=, <>
+    if( ch == '<' ) {
+        ch = source[position++];
+        if( ch == '=' )
+            return new Lexeme(Token.Le, "<=", line);
+        else if( ch == '>' )
+            return new Lexeme(Token.Ne, "<>", line);
+        else
+            --position;
+        return new Lexeme(Token.Lt, "<", line);
+    }
+    // ...
+ }
+    
+````
+
+Վերջապես, 
+
+````
+public Lexeme next()
+{
+    // ...
+    Token kind = Token.Unknown;
+    switch( ch ) {
+        case '=': kind = Token.Eq;         break;
+        case '+': kind = Token.Add;        break;
+        case '-': kind = Token.Sub;        break;
+        case '*': kind = Token.Mul;        break;
+        case '/': kind = Token.Div;        break;
+        case '^': kind = Token.Power;      break;
+        case '(': kind = Token.LeftParen;  break;
+        case ')': kind = Token.RightParen; break;
+        case ',': kind = Token.Comma;      break;
+    }
+
+    return new Lexeme(kind, String.valueOf(ch), line);
+}
+````
+ 
 
 ### Վերլուծության ռեկուրսիվ վայրէջքի եղանակ
 
