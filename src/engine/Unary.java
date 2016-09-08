@@ -12,7 +12,7 @@ public class Unary implements Expression {
     }
 
     @Override
-    public Value evaluate(Environment env ) throws RuntimeError
+    public Value evaluate( Environment env ) throws RuntimeError
     {
         Value res = subexpr.evaluate(env);
         if( operation.equals("-") )

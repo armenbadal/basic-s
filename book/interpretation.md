@@ -23,15 +23,139 @@ evaluate, իսկ հրամանները՝ կատարել — execute) դրանք։
 
 Իրական թվերը մոդելավորող `Real` դասի և տեքստային հաստատունները մոդելավորող `Text`
 դասի նմուշների ինտերպրետացիան հասարակ է. պարզապես ստեղծվում է դրանց `value` 
-դաշտերի արժեքը պարունակող `Value` օբյեկտ։ `Value` դասն ունի համապատսխան
-կոնստրուկտորները։
+դաշտերի արժեքը պարունակող `Value` օբյեկտ։ (`Value` դասն ունի համապատսխան
+կոնստրուկտորները։)
 
 
 #### Փոփոխականներ
 
+Փոփոխականի հաշվարկը պետք է վերադարձնի դրա ընթացիկ արժեքը, որը պահվում է կատարման
+միջավայրում։ Եթե կատարման միջավայրում տվյալ փոփոխականին արժեք համապատասխանեցված
+չէ, ապա ազդարարվում է սխալի մասին։
+
+````
+public class Variable implements Expression {
+    // ...
+    @Override
+    public Value evaluate( Environment env ) throws RuntimeError
+    {
+        Value val = env.get(this);
+        if( val == null )
+            throw new RuntimeError(String.format("Չսահմանված փոփոխական %s", name));
+        return val;
+    }
+    // ...
+}
+````
 
 
 #### Ունար և բինար գործողություններ
+
+Բեյսիկ-Փ լեզվում նախատեսված են երկու ունար գործողություններ՝ `-` և `NOT`, երկուսն էլ որոշված 
+միայն թվերի համար։ Դրանք հաշվարկելու համար պետք է նախ հաշվարկել գործողության 
+ենթաարտահայտությունը, ապա գործողությունը կիրառել ստացված արժեքի նկատմամբ։
+
+````
+public class Unary implements Expression {
+    // ...
+    @Override
+    public Value evaluate( Environment env ) throws RuntimeError
+    {
+        Value res = subexpr.evaluate(env);
+        if( operation.equals("-") )
+            res = new Value(-res.real);
+        else if( operation.equals("NOT") )
+            res = new Value(res.real != 0 ? 0 : 1);
+        return res;
+    }
+    // ...
+}
+````
+
+Բինար գործողությունների դեպքում էլ պետք է նախ հաշվարկել երկու ենթաարտահայտությունները, 
+ապա բինար գործողությունը կիրառել դրանց արժեքների նկատմամբ, ու վերադարձնել արդյունքը։
+Բինար գործողություններից միայն տեքստերի կցման `&` գործողությունն է որոշված տեքստային
+արժեքների համար. դա պետք է հաշվի առնել և, եթե տողերի նկատմամբ կիրառված է որևէ այլ
+գործողություն, ազդարարել սխալի մասին։
+
+````
+public class Binary implements Expression {
+    // ...
+    @Override
+    public Value evaluate( Environment env ) throws RuntimeError
+    {
+        Value res0 = subexpro.evaluate(env);
+        Value res1 = subexpri.evaluate(env);
+
+        // տեքստային գործողություն
+        if( res0.kind == Value.TEXT && res1.kind == Value.TEXT ) {
+            if( operation.equals("&") )
+                return new Value(res0.text + res1.text);
+            else
+                throw new RuntimeError("Տեքստերի համար %s գործողությունը որոշված չէ։",
+                        operation);
+        }
+        // ...
+````
+
+Թվային արժեքների հետ կատարվում են թվաբանական, համեմատման ու տրամաբանական 
+գործողություններ։ Քանի որ Բեյսիկ-Փ լեզվում բուլյան (տրամաբանական) տիպ նախատեսված
+չէ, բուլյան _ճշմարիտ_ և _կեղծ_ արժեքները մոդելավորված են համապատսխանաբար `1` և
+`0` իրական (թվային) արժեքներով։
+
+````
+        // ...
+        // թվային գործողություններ
+        double resval = 0.0;
+        switch( operation ) {
+            case "+":
+                resval = res0.real + res1.real;
+                break;
+            case "-":
+                resval = res0.real - res1.real;
+                break;
+            case "*":
+                resval = res0.real * res1.real;
+                break;
+            case "/":
+                if( res1.real == 0.0 )
+                    throw new RuntimeError("Բաժանում զրոյի վրա։");
+                resval = res0.real / res1.real;
+                break;
+            case "^":
+                resval = Math.pow(res0.real, res1.real);
+                break;
+            case "=":
+                resval = res0.real == res1.real ? 1.0 : 0.0;
+                break;
+            case "<>":
+                resval = res0.real != res1.real ? 1.0 : 0.0;
+                break;
+            case ">":
+                resval = res0.real > res1.real ? 1.0 : 0.0;
+                break;
+            case ">=":
+                resval = res0.real >= res1.real ? 1.0 : 0.0;
+                break;
+            case "<":
+                resval = res0.real < res1.real ? 1.0 : 0.0;
+                break;
+            case "<=":
+                resval = res0.real <= res1.real ? 1.0 : 0.0;
+                break;
+            case "AND":
+                resval = (res0.real != 0) && (res1.real != 0) ? 1.0 : 0.0;
+                break;
+            case "OR":
+                resval = (res0.real != 0) || (res1.real != 0) ? 1.0 : 0.0;
+                break;
+        }
+
+        return new Value(resval);
+    }
+    // ...
+}
+````
 
 
 #### Ֆունկցիայի կանչ

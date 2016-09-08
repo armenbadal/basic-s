@@ -175,7 +175,7 @@ public class Scanner {
         char ch = source[begin];
         while( ch != '"' )
             ch = source[position++];
-        String vl = String.copyValueOf(source, begin, position - begin);
+        String vl = String.copyValueOf(source, begin, position - begin - 1);
         return new Lexeme(Token.Text, vl, line);
     }
 }

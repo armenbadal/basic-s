@@ -14,11 +14,21 @@ public class Binary implements Expression {
     }
 
     @Override
-    public Value evaluate(Environment env ) throws RuntimeError
+    public Value evaluate( Environment env ) throws RuntimeError
     {
         Value res0 = subexpro.evaluate(env);
         Value res1 = subexpri.evaluate(env);
 
+        // տեքստային գործողություն
+        if( res0.kind == Value.TEXT && res1.kind == Value.TEXT ) {
+            if( operation.equals("&") )
+                return new Value(res0.text + res1.text);
+            else
+                throw new RuntimeError("Տեքստերի համար %s գործողությունը որոշված չէ։",
+                        operation);
+        }
+
+        // թվային գործողություններ
         double resval = 0.0;
         switch( operation ) {
             case "+":
