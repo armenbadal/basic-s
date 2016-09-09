@@ -6,6 +6,7 @@ import java.util.List;
 public class BuiltIn implements Expression {
     private static final String[] predefined =
             { "SQR", "ABS", "SIN" };
+    // TODO ներդրված ֆունկցիաների անունների հետ պահել նաև դրանց պարամետրերի քանակը
 
     public static boolean isInternal( String nm )
     {
@@ -25,7 +26,7 @@ public class BuiltIn implements Expression {
     }
 
     @Override
-    public Value evaluate(Environment env ) throws RuntimeError
+    public Value evaluate( Environment env ) throws RuntimeError
     {
         if( name.equals("SQR") ) {
             Value a0 = arguments.get(0).evaluate(env);
