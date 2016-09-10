@@ -17,17 +17,21 @@ public class Apply implements Expression {
     @Override
     public Value evaluate( Environment env ) throws RuntimeError
     {
+        // լոկալ կատարման միջավայր
         Environment envloc = new Environment();
 
-        List<Value> argvs = new ArrayList<>();
-        for( Expression eo : arguments )
-            argvs.add(eo.evaluate(env));
-
+        // լոկալ միջավայրում պարամետրերին համապատասխանեցվում են
+        // փոխանցված արգումենտների հաշվարկված արժեքները
         int i = 0;
-        for( Variable pri : function.parameters )
-            envloc.add(pri, argvs.get(i++));
+        for( Variable pri : function.parameters ) {
+            Value avo = arguments.get(i++).evaluate(env);
+            envloc.add(pri, avo);
+        }
 
+        // ֆունկցիայի մարմինը կատարվում է լոկալ կատարման միջավայրում
         function.body.execute(envloc);
+        // որպես արժեք վերադարձվում է լոկալ միջավայրում ֆունկցիայի անունով
+        // փոփոխականի արժեքը
         return envloc.get(new Variable(function.name));
     }
 

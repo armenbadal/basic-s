@@ -2,9 +2,9 @@
 
 Բեյսիկ-Փ լեզվի շարահյուսական վերլուծիչն (syntax analyzer) իրականացված է `parser` 
 փաթեթի `Parser` դասով։ Նույն `parser` փաթեթում են ներառված նաև բառային վերլուծիչի 
-(lexical analyzer) `Scanner` դասը, տերմինալային սիմվոլների `Token` թվարկումը, 
-ծրագրի տեքստի լեքսեմի `Lexeme` դասը, ինչպես նաև շարահյուսական սխալների ազդարարման
-`ParseError` դասը։
+(lexical analyzer) `Scanner` դասը, տերմինալային սիմվոլների `Kind` թվարկումը, 
+ծրագրի տեքստի թոքեն-լեքսեմ զուգի `Token` դասը, ինչպես նաև շարահյուսական սխալների 
+ազդարարման `ParseError` դասը։
 
 Շարահյուսական վերլուծության արդյունքում կառուցվում է _աբստրակտ քերականական ծառ_, 
 որի հանգույցները `engine` փաթեթի դասերի նմուշներն (instance) են (տես 
@@ -21,27 +21,27 @@
 անալիզատոր), որպեսզի ծրագրի տեքստից կարդա հերթական _թոքեն-լեքսեմ_ զույգը։ Բառային 
 վերլուծիչն իրականացրել եմ `Scanner` դասում։ Դրա կոնստրուկտորը ստանում է վերլուծության 
 ենթական տեքստը, իսկ `next()` մեթոդը, ամեն մի կանչի արդյունքում, վերադարձնում է տեքստից 
-կարդացած հերթական լեքսեմը՝ `Lexeme` նասի նմուշ։
+կարդացած հերթական թոքենը՝ `Token` նասի նմուշ։
 
-`Lexeme` դասը իրար է կապում `Token` թվարկումով (enumeration) սահմանված _թոքենն_ 
-(`kind` անդամը) ու ծրագրի տեքստից կարդացած հատվածը՝ _լեքսեմը_ (`value` անդամը)։ 
+`Token` դասը իրար է կապում `Kind` թվարկումով (enumeration) սահմանված _թոքենն_ 
+(`kind` անդամը) ու ծրագրի տեքստից կարդացած հատվածը՝ _լեքսեմը_ (`lexeme` անդամը)։ 
 Իսկ `line` անդամը լեքսեմի տողի համարն է ծրագիր տեքստում։
 
 ````
-public class Lexeme {
+public class Token {
     public Token kind = Token.Unknown;
-    public String value = null;
+    public String lexeme = null;
     public int line = 0;
 
-    public Lexeme( Token kn, int ps )
+    public Token( Token kn, int ps )
     {
         this(kn, null, ps);
     }
 
-    public Lexeme( Token kn, String vl, int ps )
+    public Token( Token kn, String vl, int ps )
     {
         kind = kn;
-        value = vl;
+        lexeme = vl;
         line = ps;
     }
     // ...
@@ -53,11 +53,11 @@ public class Lexeme {
 վարիադիկ մեթոդը։
 
 ````
-public class Lexeme {
+public class Token {
     // ...
-    public boolean is( Token... exps )
+    public boolean is( Kind... exps )
     {
-        for( Token ex : exps )
+        for( Kind ex : exps )
             if( kind == ex )
                 return true;
         return false;
@@ -66,12 +66,12 @@ public class Lexeme {
 }
 ````
 
-`Token` թվարկման մեջ հավաքված են Բեյսիկ-Փ լեզվի քերականության տերմինալային սիմվոլների 
+`Kind` թվարկման մեջ հավաքված են Բեյսիկ-Փ լեզվի քերականության տերմինալային սիմվոլների 
 անունները։ Դրանք ես խմբավորել եմ ըստ նշանակության (ծառայողական բառեր, գործողություններ 
 և այլն)։
 
 ````
-public enum Token {
+public enum Kind {
     // անծանոթ է 
     Unknown,
      
@@ -103,33 +103,33 @@ public enum Token {
 Վերադառնամ `Scanner` դասին։ Արդեն մի քանի անգամ նշեցի, որ այն պետք է կարողանա
 _ճանաչել_ Բեյսիկ-Փ լեզվի քերականության տերմինալային սիմվոլների բազմությունը, որի 
 ենթաբազմություն է ծառայողական բառերի բազմությունը։ `keywords` ստատիկ անդամը,
-որը `String`→`Token` արտապատկերում է, `Scanner` դասի ստատիկ արժեքավորման 
+որը `String`→`Kind` արտապատկերում է, `Scanner` դասի ստատիկ արժեքավորման 
 բլոկում լրացվում է ծառայողական բառերի ու դրանց համապատասխան թոքենների զույգերով։
 
 ````
 public class Scanner {
     // ...
-    private static Map<String,Token> keywords = null;
+    private static Map<String,Kind> keywords = null;
     static {
         keywords = new HashMap<>();
-        keywords.put("DECLARE", Token.Declare);
-        keywords.put("FUNCTION", Token.Function);
-        keywords.put("END", Token.End);
-        keywords.put("LET", Token.Let);
-        keywords.put("INPUT", Token.Input);
-        keywords.put("PRINT", Token.Print);
-        keywords.put("IF", Token.If);
-        keywords.put("THEN", Token.Then);
-        keywords.put("ELSEIF", Token.ElseIf);
-        keywords.put("ELSE", Token.Else);
-        keywords.put("FOR", Token.For);
-        keywords.put("TO", Token.To);
-        keywords.put("STEP", Token.Step);
-        keywords.put("WHILE", Token.While);
-        keywords.put("CALL", Token.Call);
-        keywords.put("AND", Token.And);
-        keywords.put("OR", Token.Or);
-        keywords.put("NOT", Token.Not);
+        keywords.put("DECLARE", Kind.Declare);
+        keywords.put("FUNCTION", Kind.Function);
+        keywords.put("END", Kind.End);
+        keywords.put("LET", Kind.Let);
+        keywords.put("INPUT", Kind.Input);
+        keywords.put("PRINT", Kind.Print);
+        keywords.put("IF", Kind.If);
+        keywords.put("THEN", Kind.Then);
+        keywords.put("ELSEIF", Kind.ElseIf);
+        keywords.put("ELSE", Kind.Else);
+        keywords.put("FOR", Kind.For);
+        keywords.put("TO", Kind.To);
+        keywords.put("STEP", Kind.Step);
+        keywords.put("WHILE", Kind.While);
+        keywords.put("CALL", Kind.Call);
+        keywords.put("AND", Kind.And);
+        keywords.put("OR", Kind.Or);
+        keywords.put("NOT", Kind.Not);
     }
     // ...
 }
@@ -156,15 +156,15 @@ public class Scanner {
 ````
 
 Հիմա ամենագլխավորի՝ `next()` մեթոդի մասին։ Արդեն նշեցի, որ այն տեքստից (ավելի ճիշտ՝ `source`
-զանգվածից) կարդում և վերադարձնում է հերթական լեքսեմ-թոքեն զույգը։ `next()` մեթոդը, ինչպես 
+զանգվածից) կարդում և վերադարձնում է հերթական թոքեն-լեքսեմ զույգը։ `next()` մեթոդը, ինչպես 
 ընդունված է բառային վերլուծիչներում, աշխատում է  _վերջավոր ավտոմատի_ մոդելավորման սկզբունքով.
 կարդում է հերթական սիմվոլը, դրանով որոշում է, թե ինչ հաջորդականություն պետք է կարդա, կարդում
-է այդ հաջորդականությունը և վերադարձնում է համապատասխան `Lexeme` օբյեկտը։ Բացի այդ, `next()`
+է այդ հաջորդականությունը և վերադարձնում է համապատասխան `Token` օբյեկտը։ Բացի այդ, `next()`
 մեթոդի պարտականությունն է նաև ակրդալ ու անտեսել տեքստում հանդիպող բացատանիշերն ու Բեյսիկ-Փ
 լեզվի մեկնաբանությունները։ Հետևյալ հատվածում ցուցադրված են այդ առաջին քայլերը.
 
 ````
-public Lexeme next()
+public Token next()
 {
     char ch = source[position++];
 
@@ -174,7 +174,7 @@ public Lexeme next()
 
     // հոսքի ավարտ
     if( position == source.length )
-        return new Lexeme(Token.Eos, line);
+        return new Token(Kind.Eos, line);
         
     // մեկնաբանություն
     if( ch == '\'' ) {
@@ -194,7 +194,7 @@ public Lexeme next()
 առանձին մեթոդ եմ գրել։
 
 ````
-public Lexeme next()
+public Token next()
 {
     // ...
     // ծառայողական բառեր և իդենտիֆիկատոր
@@ -219,7 +219,7 @@ public Lexeme next()
 
 
 ````
-private Lexeme keywordOrIdentifier()
+private Token keywordOrIdentifier()
 {
     int begin = position - 1;
     char ch = source[begin];
@@ -228,8 +228,8 @@ private Lexeme keywordOrIdentifier()
     if( ch != '$' )
         --position;
     String vl = String.copyValueOf(source, begin, position - begin);
-    Token kd = keywords.getOrDefault(vl, Token.Identifier);
-    return new Lexeme(kd, vl, line);
+    Kind kd = keywords.getOrDefault(vl, Kind.Identifier);
+    return new Token(kd, vl, line);
 }
 ````
 
@@ -237,7 +237,7 @@ private Lexeme keywordOrIdentifier()
 `numericLiteral()` մեթոդը կարդում է այդ տեսքի թվային (իրական) լիտերալները։
 
 ````
-private Lexeme numericLiteral()
+private Token numericLiteral()
 {
     int begin = position - 1;
     char ch = source[begin];
@@ -250,26 +250,26 @@ private Lexeme numericLiteral()
     }
     --position;
     String vl = String.copyValueOf(source, begin, position - begin);
-    return new Lexeme(Token.Number, vl, line);
+    return new Token(Kind.Number, vl, line);
 }
 ````
 
 Տեքստային լիտերալները սկսվում և ավարտվում են զույգ չակերտով (`"`) և կարող են 
 պարունակել կամայական նիշեր՝ բացի չակերտից։ `textLiteral()` մեթոդը կարդում է 
-տեքստային մեկ տեքստային լիտերալ և վերադարձնում է համապատասխան `Lexeme` օբյեկտ։
+տեքստային մեկ տեքստային լիտերալ և վերադարձնում է համապատասխան `Token` օբյեկտ։
 (Ընթերցողին ուզում եմ հուշել, որ այս մեթոդում թերություն (bug) կա․ թույլատրվում 
 է տեքստային լիտերալում կարդալ նոր տողի անցման նիշը։ Նախ՝ դա չի համապատասխանում 
 BASIC֊ի կանոններն, ապա՝ խառնում է տողերի հաշիվը։) 
 
 ````
-private Lexeme textLiteral()
+private Token textLiteral()
 {
     int begin = position;
     char ch = source[begin];
     while( ch != '"' )
         ch = source[position++];
     String vl = String.copyValueOf(source, begin, position - begin);
-    return new Lexeme(Token.Text, vl, line);
+    return new Token(Kind.Text, vl, line);
 }
 ````
 
@@ -277,29 +277,29 @@ private Lexeme textLiteral()
  գործողությունների նիշերը։ Այստեղ բացատրելու բան էլ չկա։
  
  ````
-public Lexeme next()
+public Token next()
 {
     // ...
     // >, >=
     if( ch == '>' ) {
         ch = source[position++];
         if( ch == '=' )
-            return new Lexeme(Token.Ge, ">=", line);
+            return new Token(Kind.Ge, ">=", line);
         else
             --position;
-        return new Lexeme(Token.Gt, ">", line);
+        return new Token(Kind.Gt, ">", line);
     }
 
     // <, <=, <>
     if( ch == '<' ) {
         ch = source[position++];
         if( ch == '=' )
-            return new Lexeme(Token.Le, "<=", line);
+            return new Token(Kind.Le, "<=", line);
         else if( ch == '>' )
-            return new Lexeme(Token.Ne, "<>", line);
+            return new Token(Kind.Ne, "<>", line);
         else
             --position;
-        return new Lexeme(Token.Lt, "<", line);
+        return new Token(Kind.Lt, "<", line);
     }
     // ...
  }
@@ -309,23 +309,23 @@ public Lexeme next()
 Վերջապես, 
 
 ````
-public Lexeme next()
+public Token next()
 {
     // ...
-    Token kind = Token.Unknown;
+    Kind kind = Kind.Unknown;
     switch( ch ) {
-        case '=': kind = Token.Eq;         break;
-        case '+': kind = Token.Add;        break;
-        case '-': kind = Token.Sub;        break;
-        case '*': kind = Token.Mul;        break;
-        case '/': kind = Token.Div;        break;
-        case '^': kind = Token.Power;      break;
-        case '(': kind = Token.LeftParen;  break;
-        case ')': kind = Token.RightParen; break;
-        case ',': kind = Token.Comma;      break;
+        case '=': kind = Kind.Eq;         break;
+        case '+': kind = Kind.Add;        break;
+        case '-': kind = Kind.Sub;        break;
+        case '*': kind = Kind.Mul;        break;
+        case '/': kind = Kind.Div;        break;
+        case '^': kind = Kind.Power;      break;
+        case '(': kind = Kind.LeftParen;  break;
+        case ')': kind = Kind.RightParen; break;
+        case ',': kind = Kind.Comma;      break;
     }
 
-    return new Lexeme(kind, String.valueOf(ch), line);
+    return new Token(kind, String.valueOf(ch), line);
 }
 ````
  

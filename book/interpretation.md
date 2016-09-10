@@ -33,7 +33,7 @@ evaluate, իսկ հրամանները՝ կատարել — execute) դրանք։
 միջավայրում։ Եթե կատարման միջավայրում տվյալ փոփոխականին արժեք համապատասխանեցված
 չէ, ապա ազդարարվում է սխալի մասին։
 
-````
+````java
 public class Variable implements Expression {
     // ...
     @Override
@@ -55,7 +55,7 @@ public class Variable implements Expression {
 միայն թվերի համար։ Դրանք հաշվարկելու համար պետք է նախ հաշվարկել գործողության 
 ենթաարտահայտությունը, ապա գործողությունը կիրառել ստացված արժեքի նկատմամբ։
 
-````
+````java
 public class Unary implements Expression {
     // ...
     @Override
@@ -78,7 +78,7 @@ public class Unary implements Expression {
 արժեքների համար. դա պետք է հաշվի առնել և, եթե տողերի նկատմամբ կիրառված է որևէ այլ
 գործողություն, ազդարարել սխալի մասին։
 
-````
+````java
 public class Binary implements Expression {
     // ...
     @Override
@@ -103,7 +103,7 @@ public class Binary implements Expression {
 չէ, բուլյան _ճշմարիտ_ և _կեղծ_ արժեքները մոդելավորված են համապատսխանաբար `1` և
 `0` իրական (թվային) արժեքներով։
 
-````
+````java
         // ...
         // թվային գործողություններ
         double resval = 0.0;
@@ -166,6 +166,66 @@ public class Binary implements Expression {
 մեջ առնված արգումենտների ցուցակը։ Իրականացումները, սակայն, տարբեր են․ ներդրված
 ֆունկցիաների կանչի համար ստեղծվում է `Builtin` օբյեկտ, իսկ ծրագրավորողի սահմանած
 ֆունկցիաների համար՝ `Apply` օբյեկտ։ 
+
+`BuiltIn` դասի `evaluate()` մեթոդում ընտրություն է կատարվում ֆունկցիայի անունով,
+հաշվարկվում է արգումենտը, ապա հաշվարկվում է ներդրված ֆունկցիային համապատասխան
+գործշողությունը։ Օրինակ, `SQR` (իրական արժեքից քառակուսի արմատ) ֆունկցիայի համար
+օրգտագործվում է Ջավա լեզվի `Math.sqrt()` մեդոդը։
+
+````java
+public class BuiltIn implements Expression {
+    // ...
+    @Override
+    public Value evaluate( Environment env ) throws RuntimeError
+    {
+        if( name.equals("SQR") ) {
+            Value a0 = arguments.get(0).evaluate(env);
+            return new Value(Math.sqrt(a0.real));
+        }
+
+        // ...
+        
+        return null;
+    }
+    // ...
+}
+````
+
+Սկզբունքորեն այլ է `Apply` դասի նմուշի հաշվարկումը։ Այստեղ կիրառվող ֆունկցիան
+ծրագրավորողի կողմից սահմանված ֆունկցիայի մոդել է՝ `Function` դասի նմուշ։ Նախ՝
+ստեղծվում է նոր լոկալ կատարման միջավայր և դրա մեջ ֆունկցիայի ամեն մի պարամետրին 
+համապատասխանեցվում է փոխանցված արգումենտի հաշվարկված արժեքը։ Արգումենտները
+հաշվարկվում են `evaluate()` մեթոդին փոխանցված կատարման միջավայրում։ Հետո
+ֆունկցիայի մարմինը _կատարվում_ է՝ օգտագործելով լոկալ կատարման միջավայրը։ Եվ 
+վերջում, որպես ֆունկցիայի արժեք, վերադարձվում է ֆունկցիայի անունով փոփոխականի
+արժեքը։
+
+````java
+public class Apply implements Expression {
+    // ...
+    @Override
+    public Value evaluate( Environment env ) throws RuntimeError
+    {
+        // լոկալ կատարման միջավայր
+        Environment envloc = new Environment();
+
+        // լոկալ միջավայրում պարամետրերին համապատասխանեցվում են
+        // փոխանցված արգումենտների հաշվարկված արժեքները
+        int i = 0;
+        for( Variable pri : function.parameters ) {
+            Value avo = arguments.get(i++).evaluate(env);
+            envloc.add(pri, avo);
+        }
+
+        // ֆունկցիայի մարմինը կատարվում է լոկալ կատարման միջավայրում
+        function.body.execute(envloc);
+        // որպես արժեք վերադարձվում է լոկալ միջավայրում ֆունկցիայի անունով
+        // փոփոխականի արժեքը
+        return envloc.get(new Variable(function.name));
+    }
+    // ...
+}
+````
 
 
 ### Ղեկավարող կառուցվածքների կատարումը

@@ -1,54 +1,34 @@
 package parser;
 
 /**/
-public enum Token {
-    Unknown,
-    Number,
-    Text,
-    Identifier,
+public class Token {
+    public Kind kind = Kind.Unknown;
+    public String lexeme = null;
+    public int line = 0;
 
-    Declare,
-    Function,
-    End,
-    Dim,
-    Let,
-    Input,
-    Print,
-    If,
-    Then,
-    ElseIf,
-    Else,
-    For,
-    To,
-    Step,
-    While,
-    Call,
+    public Token(Kind kn, int ps )
+    {
+        this(kn, null, ps);
+    }
 
-    LeftParen,
-    RightParen,
-    Comma,
+    public Token(Kind kn, String vl, int ps )
+    {
+        kind = kn;
+        lexeme = vl;
+        line = ps;
+    }
 
-    Or,
-    And,
-    Not,
+    public boolean is( Kind... exps )
+    {
+        for( Kind ex : exps )
+            if( kind == ex )
+                return true;
+        return false;
+    }
 
-    Eq,
-    Ne,
-
-    Gt,
-    Ge,
-    Lt,
-    Le,
-
-    Add,
-    Sub,
-    Mul,
-    Div,
-    Power,
-
-    Ampersand,
-
-    NewLine,
-
-    Eos
+    @Override
+    public String toString()
+    {
+        return String.format("<%s|%s|%d>", kind, lexeme, line);
+    }
 }

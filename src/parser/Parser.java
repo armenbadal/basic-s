@@ -10,7 +10,7 @@ import java.util.Map;
 /**/
 public class Parser {
     private Scanner scan = null;
-    private Lexeme lookahead = null;
+    private Token lookahead = null;
 
     private List<Function> subroutines = null;
     private Map<String,String> symbols = null;
@@ -20,7 +20,7 @@ public class Parser {
         scan = new Scanner(text + "@");
         lookahead = scan.next();
         // բաց թողնել ֆայլի սկզբի դատարկ տողերը
-        while( lookahead.is(Token.NewLine) )
+        while( lookahead.is(Kind.NewLine) )
             lookahead = scan.next();
     }
 
@@ -29,11 +29,11 @@ public class Parser {
         subroutines = new ArrayList<>();
         symbols = new HashMap<>();
 
-        while( lookahead.is(Token.Declare, Token.Function) ) {
+        while( lookahead.is(Kind.Declare, Kind.Function) ) {
             Function subri = null;
-            if( lookahead.is(Token.Declare) )
+            if( lookahead.is(Kind.Declare) )
                 subri = parseDeclare();
-            else if( lookahead.is(Token.Function) )
+            else if( lookahead.is(Kind.Function) )
                 subri = parseFunction();
             if( subri != null )
                 addSubroutine(subri);
@@ -50,37 +50,37 @@ public class Parser {
 
     private Function parseDeclare() throws ParseError
     {
-        match(Token.Declare);
+        match(Kind.Declare);
         return parseFuncHeader();
     }
 
     private Function parseFuncHeader() throws ParseError
     {
-        match(Token.Function);
-        String name = lookahead.value;
-        match(Token.Identifier);
+        match(Kind.Function);
+        String name = lookahead.lexeme;
+        match(Kind.Identifier);
 
         // ստուգել ֆունկցիայի՝ դեռևս սահմանված չլինելը
         for( Function si : subroutines )
             if( si.name.equals(name) && si.body != null )
                 throw new ParseError(name + " անունով ֆունկցիան արդեն սահմանված է։");
 
-        match(Token.LeftParen);
+        match(Kind.LeftParen);
         List<Variable> params = new ArrayList<>();
-        if( lookahead.is(Token.Identifier) ) {
-            Variable varl = new Variable(lookahead.value);
-            match(Token.Identifier);
+        if( lookahead.is(Kind.Identifier) ) {
+            Variable varl = new Variable(lookahead.lexeme);
+            match(Kind.Identifier);
             if( params.contains(varl) )
                 throw new ParseError(varl + " անունն արդեն կա պարամետրերի ցուցակում։");
             params.add(varl);
-            while( lookahead.is(Token.Comma) ) {
-                match(Token.Comma);
-                varl = new Variable(lookahead.value);
-                match(Token.Identifier);
+            while( lookahead.is(Kind.Comma) ) {
+                match(Kind.Comma);
+                varl = new Variable(lookahead.lexeme);
+                match(Kind.Identifier);
                 params.add(varl);
             }
         }
-        match(Token.RightParen);
+        match(Kind.RightParen);
         parseNewLines();
 
         return new Function(name, params);
@@ -96,8 +96,8 @@ public class Parser {
                 .findFirst()
                 .get();
         subr.body = parseStatementList();
-        match(Token.End);
-        match(Token.Function);
+        match(Kind.End);
+        match(Kind.Function);
         parseNewLines();
 
         return subr;
@@ -107,8 +107,8 @@ public class Parser {
     {
         Sequence seq = new Sequence();
         // FIRST(Statement)
-        while( lookahead.is(Token.Identifier, Token.Input, Token.Print, Token.If,
-                Token.For, Token.While, Token.Call, Token.Dim, Token.Let) ) {
+        while( lookahead.is(Kind.Identifier, Kind.Input, Kind.Print, Kind.If,
+                Kind.For, Kind.While, Kind.Call, Kind.Dim, Kind.Let) ) {
             Statement sti = parseStatement();
             seq.add(sti);
         }
@@ -153,18 +153,18 @@ public class Parser {
 
     private Statement parseAssignment() throws ParseError
     {
-        if( lookahead.is(Token.Let) )
-            match(Token.Let);
-        String varl = lookahead.value;
-        match(Token.Identifier);
+        if( lookahead.is(Kind.Let) )
+            match(Kind.Let);
+        String varl = lookahead.lexeme;
+        match(Kind.Identifier);
         // երբ  վերագրվում է զանգվածի տարրին
         Expression einx = null;
-        if( lookahead.is(Token.LeftParen) ) {
-            match(Token.LeftParen);
+        if( lookahead.is(Kind.LeftParen) ) {
+            match(Kind.LeftParen);
             einx = parseDisjunction();
-            match(Token.RightParen);
+            match(Kind.RightParen);
         }
-        match(Token.Eq);
+        match(Kind.Eq);
         Expression exl = parseDisjunction();
 
         // TODO նոր անուն ավելացնել symbols-ում
@@ -174,16 +174,16 @@ public class Parser {
 
     private Statement parseInput() throws ParseError
     {
-        match(Token.Input);
-        String varn = lookahead.value;
-        match(Token.Identifier);
+        match(Kind.Input);
+        String varn = lookahead.lexeme;
+        match(Kind.Identifier);
 
         return new Input(new Variable(varn));
     }
 
     private Statement parsePrint() throws ParseError
     {
-        match(Token.Print);
+        match(Kind.Print);
         Expression exo = parseDisjunction();
 
         return new Print(exo);
@@ -191,82 +191,82 @@ public class Parser {
 
     private Statement parseConditional() throws ParseError
     {
-        match(Token.If);
+        match(Kind.If);
         Expression cond = parseDisjunction();
-        match(Token.Then);
+        match(Kind.Then);
         parseNewLines();
         Statement thenp = parseStatementList();
         If statbr = new If(cond, thenp);
         If bi = statbr;
-        while( lookahead.is(Token.ElseIf) ) {
-            match(Token.ElseIf);
+        while( lookahead.is(Kind.ElseIf) ) {
+            match(Kind.ElseIf);
             Expression coe = parseDisjunction();
-            match(Token.Then);
+            match(Kind.Then);
             parseNewLines();
             Statement ste = parseStatementList();
             If bre = new If(coe, ste);
             bi.setElse(bre);
             bi = bre;
         }
-        if( lookahead.is(Token.Else) ) {
-            match(Token.Else);
+        if( lookahead.is(Kind.Else) ) {
+            match(Kind.Else);
             parseNewLines();
             Statement bre = parseStatementList();
             bi.setElse(bre);
         }
-        match(Token.End);
-        match(Token.If);
+        match(Kind.End);
+        match(Kind.If);
 
         return statbr;
     }
 
     private Statement parseForLoop() throws ParseError
     {
-        match(Token.For);
-        Variable prn = new Variable(lookahead.value);
-        match(Token.Identifier);
+        match(Kind.For);
+        Variable prn = new Variable(lookahead.lexeme);
+        match(Kind.Identifier);
         if( prn.isText() )
             throw new ParseError("FOR ցիկլի պարամետրը պետք է լինի թվային։");
-        match(Token.Eq);
+        match(Kind.Eq);
         Expression init = parseDisjunction();
-        match(Token.To);
+        match(Kind.To);
         Expression lim = parseDisjunction();
         Expression ste = null;
-        if( lookahead.is(Token.Step) ) {
-            match(Token.Step);
+        if( lookahead.is(Kind.Step) ) {
+            match(Kind.Step);
             ste = parseDisjunction();
         }
         parseNewLines();
         Statement bdy = parseStatementList();
-        match(Token.End);
-        match(Token.For);
+        match(Kind.End);
+        match(Kind.For);
 
         return new For(prn, init, lim, ste, bdy);
     }
 
     private Statement parseWhileLoop() throws ParseError
     {
-        match(Token.While);
+        match(Kind.While);
         Expression cond = parseDisjunction();
         parseNewLines();
         Statement bdy = parseStatementList();
-        match(Token.End);
-        match(Token.While);
+        match(Kind.End);
+        match(Kind.While);
 
         return new While(cond, bdy);
     }
 
     private Statement parseCallSub() throws ParseError
     {
-        match(Token.Call);
-        String subnam = lookahead.value;
-        match(Token.Identifier);
+        match(Kind.Call);
+        String subnam = lookahead.lexeme;
+        match(Kind.Identifier);
         // TODO ստուգել ֆունկցիայի սահմանված կամ հայտարարված լինելը
         ArrayList<Expression> argus = new ArrayList<>();
-        if( lookahead.is(Token.Number, Token.Identifier, Token.Sub, Token.Not, Token.LeftParen) ) {
+        if( lookahead.is(Kind.Number, Kind.Identifier, Kind.Sub, Kind.Not, Kind.LeftParen) ) {
             Expression exi = parseDisjunction();
             argus.add(exi);
-            while( lookahead.is(Token.Comma) ) {
+            while( lookahead.is(Kind.Comma) ) {
                 lookahead = scan.next();
                 exi = parseDisjunction();
                 argus.add(exi);
@@ -286,13 +286,13 @@ public class Parser {
 
     private Statement parseDim() throws ParseError
     {
-        match(Token.Dim);
-        String name = lookahead.value;
-        match(Token.Identifier);
-        match(Token.LeftParen);
-        String strsz = lookahead.value;
-        match(Token.Number);
-        match(Token.RightParen);
+        match(Kind.Dim);
+        String name = lookahead.lexeme;
+        match(Kind.Identifier);
+        match(Kind.LeftParen);
+        String strsz = lookahead.lexeme;
+        match(Kind.Number);
+        match(Kind.RightParen);
 
         Variable var = new Variable(name);
         double size = Double.valueOf(strsz);
@@ -302,15 +302,15 @@ public class Parser {
 
     private void parseNewLines() throws ParseError
     {
-        match(Token.NewLine);
-        while( lookahead.is(Token.NewLine) )
+        match(Kind.NewLine);
+        while( lookahead.is(Kind.NewLine) )
             lookahead = scan.next();
     }
 
     private Expression parseDisjunction() throws ParseError
     {
         Expression exo = parseConjunction();
-        while( lookahead.is(Token.Or) ) {
+        while( lookahead.is(Kind.Or) ) {
             lookahead = scan.next();
             Expression exi = parseConjunction();
             return new Binary("OR", exo, exi);
@@ -321,7 +321,7 @@ public class Parser {
     private Expression parseConjunction() throws ParseError
     {
         Expression exo = parseEquality();
-        while( lookahead.is(Token.And) ) {
+        while( lookahead.is(Kind.And) ) {
             lookahead = scan.next();
             Expression exi = parseEquality();
             return new Binary("AND", exo, exi);
@@ -332,8 +332,8 @@ public class Parser {
     private Expression parseEquality() throws ParseError
     {
         Expression exo = parseComparison();
-        if( lookahead.is(Token.Eq, Token.Ne) ) {
-            String oper = lookahead.value;
+        if( lookahead.is(Kind.Eq, Kind.Ne) ) {
+            String oper = lookahead.lexeme;
             lookahead = scan.next();
             Expression exi = parseComparison();
             exo = new Binary(oper, exo, exi);
@@ -344,8 +344,8 @@ public class Parser {
     private Expression parseComparison() throws ParseError
     {
         Expression exo = parseAddition();
-        if( lookahead.is(Token.Gt, Token.Ge, Token.Lt, Token.Le) ) {
-            String oper = lookahead.value;
+        if( lookahead.is(Kind.Gt, Kind.Ge, Kind.Lt, Kind.Le) ) {
+            String oper = lookahead.lexeme;
             lookahead = scan.next();
             Expression exi = parseAddition();
             exo = new Binary(oper, exo, exi);
@@ -356,8 +356,8 @@ public class Parser {
     private Expression parseAddition() throws ParseError
     {
         Expression exo = parseMultiplication();
-        while( lookahead.is(Token.Add, Token.Sub, Token.Ampersand) ) {
-            String oper = lookahead.value;
+        while( lookahead.is(Kind.Add, Kind.Sub, Kind.Ampersand) ) {
+            String oper = lookahead.lexeme;
             lookahead = scan.next();
             Expression exi = parseMultiplication();
             exo = new Binary(oper, exo, exi);
@@ -368,8 +368,8 @@ public class Parser {
     private Expression parseMultiplication() throws ParseError
     {
         Expression exo = parsePower();
-        while( lookahead.is(Token.Mul, Token.Div) ) {
-            String oper = lookahead.value;
+        while( lookahead.is(Kind.Mul, Kind.Div) ) {
+            String oper = lookahead.lexeme;
             lookahead = scan.next();
             Expression exi = parsePower();
             exo = new Binary(oper, exo, exi);
@@ -380,8 +380,8 @@ public class Parser {
     private Expression parsePower() throws ParseError
     {
         Expression exo = parseFactor();
-        if( lookahead.is(Token.Power) ) {
-            match(Token.Power);
+        if( lookahead.is(Kind.Power) ) {
+            match(Kind.Power);
             Expression exi = parsePower();
             exo = new Binary("^", exo, exi);
         }
@@ -391,33 +391,33 @@ public class Parser {
     private Expression parseFactor() throws ParseError
     {
         Expression result = null;
-        if( lookahead.is(Token.Number) ) {
-            double numval = Double.valueOf(lookahead.value);
+        if( lookahead.is(Kind.Number) ) {
+            double numval = Double.valueOf(lookahead.lexeme);
             lookahead = scan.next();
             result = new Real(numval);
         }
-        else if( lookahead.is(Token.Text) ) {
-            String textval = lookahead.value;
+        else if( lookahead.is(Kind.Text) ) {
+            String textval = lookahead.lexeme;
             lookahead = scan.next();
             result = new Text(textval);
         }
-        else if( lookahead.is(Token.Identifier) ) {
-            String varnam = lookahead.value;
+        else if( lookahead.is(Kind.Identifier) ) {
+            String varnam = lookahead.lexeme;
             lookahead = scan.next();
-            if( lookahead.is(Token.LeftParen) ) {
+            if( lookahead.is(Kind.LeftParen) ) {
                 ArrayList<Expression> argus = new ArrayList<>();
-                match(Token.LeftParen);
+                match(Kind.LeftParen);
                 // FIRST(Disjunction)
-                if( lookahead.is(Token.Number, Token.Identifier, Token.Sub, Token.Not, Token.LeftParen) ) {
+                if( lookahead.is(Kind.Number, Kind.Identifier, Kind.Sub, Kind.Not, Kind.LeftParen) ) {
                     Expression exi = parseDisjunction();
                     argus.add(exi);
-                    while( lookahead.is(Token.Comma) ) {
+                    while( lookahead.is(Kind.Comma) ) {
                         lookahead = scan.next();
                         exi = parseDisjunction();
                         argus.add(exi);
                     }
                 }
-                match(Token.RightParen);
+                match(Kind.RightParen);
                 // ստուգել ներդրված ֆունկցիա լինելը
                 if( BuiltIn.isInternal(varnam) )
                     return new BuiltIn(varnam, argus);
@@ -434,22 +434,22 @@ public class Parser {
             else
                 result = new Variable(varnam);
         }
-        else if( lookahead.is(Token.Sub, Token.Not) ) {
-            String oper = lookahead.value;
+        else if( lookahead.is(Kind.Sub, Kind.Not) ) {
+            String oper = lookahead.lexeme;
             lookahead = scan.next();
             Expression subex = parseFactor();
             result = new Unary(oper, subex);
         }
-        else if( lookahead.is(Token.LeftParen) ) {
-            match(Token.LeftParen);
+        else if( lookahead.is(Kind.LeftParen) ) {
+            match(Kind.LeftParen);
             result = parseDisjunction();
-            match(Token.RightParen);
+            match(Kind.RightParen);
         }
 
         return result;
     }
 
-    private void match( Token exp ) throws ParseError
+    private void match( Kind exp ) throws ParseError
     {
         if( lookahead.is(exp) )
             lookahead = scan.next();

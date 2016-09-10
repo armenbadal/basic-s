@@ -5,28 +5,28 @@ import java.util.Map;
 
 /**/
 public class Scanner {
-    private static Map<String,Token> keywords = null;
+    private static Map<String, Kind> keywords = null;
     static {
         keywords = new HashMap<>();
-        keywords.put("DECLARE", Token.Declare);
-        keywords.put("FUNCTION", Token.Function);
-        keywords.put("END", Token.End);
-        keywords.put("DIM", Token.Dim);
-        keywords.put("LET", Token.Let);
-        keywords.put("INPUT", Token.Input);
-        keywords.put("PRINT", Token.Print);
-        keywords.put("IF", Token.If);
-        keywords.put("THEN", Token.Then);
-        keywords.put("ELSEIF", Token.ElseIf);
-        keywords.put("ELSE", Token.Else);
-        keywords.put("FOR", Token.For);
-        keywords.put("TO", Token.To);
-        keywords.put("STEP", Token.Step);
-        keywords.put("WHILE", Token.While);
-        keywords.put("CALL", Token.Call);
-        keywords.put("AND", Token.And);
-        keywords.put("OR", Token.Or);
-        keywords.put("NOT", Token.Not);
+        keywords.put("DECLARE", Kind.Declare);
+        keywords.put("FUNCTION", Kind.Function);
+        keywords.put("END", Kind.End);
+        keywords.put("DIM", Kind.Dim);
+        keywords.put("LET", Kind.Let);
+        keywords.put("INPUT", Kind.Input);
+        keywords.put("PRINT", Kind.Print);
+        keywords.put("IF", Kind.If);
+        keywords.put("THEN", Kind.Then);
+        keywords.put("ELSEIF", Kind.ElseIf);
+        keywords.put("ELSE", Kind.Else);
+        keywords.put("FOR", Kind.For);
+        keywords.put("TO", Kind.To);
+        keywords.put("STEP", Kind.Step);
+        keywords.put("WHILE", Kind.While);
+        keywords.put("CALL", Kind.Call);
+        keywords.put("AND", Kind.And);
+        keywords.put("OR", Kind.Or);
+        keywords.put("NOT", Kind.Not);
     }
 
     private char[] source = null;
@@ -41,7 +41,7 @@ public class Scanner {
     }
 
     //
-    public Lexeme next()
+    public Token next()
     {
         char ch = source[position++];
 
@@ -51,7 +51,7 @@ public class Scanner {
 
         // հոսքի ավարտ
         if( position == source.length )
-            return new Lexeme(Token.Eos, line);
+            return new Token(Kind.Eos, line);
 
         // մեկնաբանություն
         if( ch == '\'' ) {
@@ -77,69 +77,69 @@ public class Scanner {
 
         // մետասիմվոլներ կամ գործողություններ
         if( ch == '\n' )
-            return new Lexeme(Token.NewLine, line++);
+            return new Token(Kind.NewLine, line++);
 
         // >, >=
         if( ch == '>' ) {
             ch = source[position++];
             if( ch == '=' )
-                return new Lexeme(Token.Ge, ">=", line);
+                return new Token(Kind.Ge, ">=", line);
             else
                 --position;
-            return new Lexeme(Token.Gt, ">", line);
+            return new Token(Kind.Gt, ">", line);
         }
 
         // <, <=, <>
         if( ch == '<' ) {
             ch = source[position++];
             if( ch == '=' )
-                return new Lexeme(Token.Le, "<=", line);
+                return new Token(Kind.Le, "<=", line);
             else if( ch == '>' )
-                return new Lexeme(Token.Ne, "<>", line);
+                return new Token(Kind.Ne, "<>", line);
             else
                 --position;
-            return new Lexeme(Token.Lt, "<", line);
+            return new Token(Kind.Lt, "<", line);
         }
 
-        Token kind = Token.Unknown;
+        Kind kind = Kind.Unknown;
         switch( ch ) {
             case '=':
-                kind = Token.Eq;
+                kind = Kind.Eq;
                 break;
             case '+':
-                kind = Token.Add;
+                kind = Kind.Add;
                 break;
             case '-':
-                kind = Token.Sub;
+                kind = Kind.Sub;
                 break;
             case '*':
-                kind = Token.Mul;
+                kind = Kind.Mul;
                 break;
             case '/':
-                kind = Token.Div;
+                kind = Kind.Div;
                 break;
             case '^':
-                kind = Token.Power;
+                kind = Kind.Power;
                 break;
             case '(':
-                kind = Token.LeftParen;
+                kind = Kind.LeftParen;
                 break;
             case ')':
-                kind = Token.RightParen;
+                kind = Kind.RightParen;
                 break;
             case ',':
-                kind = Token.Comma;
+                kind = Kind.Comma;
                 break;
             case '&':
-                kind = Token.Ampersand;
+                kind = Kind.Ampersand;
                 break;
         }
 
-        return new Lexeme(kind, String.valueOf(ch), line);
+        return new Token(kind, String.valueOf(ch), line);
     }
 
     //
-    private Lexeme keywordOrIdentifier()
+    private Token keywordOrIdentifier()
     {
         int begin = position - 1;
         char ch = source[begin];
@@ -148,12 +148,12 @@ public class Scanner {
         if( ch != '$' )
             --position;
         String vl = String.copyValueOf(source, begin, position - begin);
-        Token kd = keywords.getOrDefault(vl, Token.Identifier);
-        return new Lexeme(kd, vl, line);
+        Kind kd = keywords.getOrDefault(vl, Kind.Identifier);
+        return new Token(kd, vl, line);
     }
 
     //
-    private Lexeme numericLiteral()
+    private Token numericLiteral()
     {
         int begin = position - 1;
         char ch = source[begin];
@@ -166,16 +166,16 @@ public class Scanner {
         }
         --position;
         String vl = String.copyValueOf(source, begin, position - begin);
-        return new Lexeme(Token.Number, vl, line);
+        return new Token(Kind.Number, vl, line);
     }
 
-    private Lexeme textLiteral()
+    private Token textLiteral()
     {
         int begin = position;
         char ch = source[begin];
         while( ch != '"' )
             ch = source[position++];
         String vl = String.copyValueOf(source, begin, position - begin - 1);
-        return new Lexeme(Token.Text, vl, line);
+        return new Token(Kind.Text, vl, line);
     }
 }
