@@ -17,7 +17,6 @@ public class If implements Statement {
         alternative = al;
     }
 
-
     @Override
     public void execute( Environment env ) throws RuntimeError
     {

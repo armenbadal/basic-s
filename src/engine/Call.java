@@ -7,7 +7,7 @@ import java.util.List;
 public class Call implements Statement {
     private Apply appsub = null;
 
-    public Call(Function fu, List<Expression> ag )
+    public Call( Function fu, List<Expression> ag )
     {
         appsub = new Apply(fu, ag);
     }

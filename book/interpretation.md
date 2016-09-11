@@ -230,4 +230,157 @@ public class Apply implements Expression {
 
 ### Ղեկավարող կառուցվածքների կատարումը
 
+Ղեկավարող կառուցվածքների կատարումը ծրագրավորելու համար`Statement` ինտերֆեյսում
+նախատեսել եմ `execute()` մեթոդը, որը, ինչպես `Expression` ինտերֆեյսի `evaluate()`
+մեթոդը, արգումենտում ստանում է կատարման միջավայրի հղումը։ `execute()` մեթոդների
+կատարման ժամանակ փոփոխականների ընթացիկ արժեքները հարցվում են կատարման միջավայրից, 
+և այդտեղ են գրանցվում փոփխականների թարմ արժեքները։
+
+#### Վերագրման հրաման
+
+`Let` դասով մոդելավորված վերագրման հրամանի միջոցով կատարման միջավայրում ստեղծվում 
+են նոր փոփոխական-արժեք կապեր, կամ փոխվում են արդեն գոյություն ունեցող կապերի 
+արժեքները։ `execute()` մեթոդում նախ հաշվարկվում է վերագրվող արտահայտության արժեքը,
+ապա կատարման միջավայրի `update()` մեթոդով վերագրվող փոփոխականին է կապվում այդ
+արժեքը։
+
+````java
+public class Let implements Statement {
+    // ...
+    @Override
+    public void execute( Environment env ) throws RuntimeError
+    {
+        Value val = valu.evaluate(env);
+        env.update(vari, val);
+    }
+    // ...
+}
+````
+
+
+#### Ներմուծման և արտածման հրամաններ
+
+`Input` դասով մոդելավորված ներմուծման հրամանը ներմուծման ստանդարտ հոսքից կարդում 
+է իրական թիվ կամ տեքստի տող, և այդ կարդացած արժեքը կատարման միջավայրում կապում 
+է նշված փոփոխականի հետ։
+
+````java
+public class Input implements Statement {
+    // ...
+    @Override
+    public void execute( Environment env )
+    {
+        System.out.print("? ");
+        java.util.Scanner scan = new java.util.Scanner(System.in);
+        if( vari.isText() ) {
+            String value = scan.nextLine();
+            env.update(vari, new Value(value));
+        }
+        else {
+            double value = scan.nextDouble();
+            env.update(vari, new Value(value));
+        }
+    }
+    // ...
+}
+````
+
+Տվյալների արտածման հրամանը, որի մոդելը `Print` դասն է, արտածման ստանդարտ հոսքին 
+է դուրս բերում իր արգումենտում տրված արտահայտության արժեքը։
+
+````java
+public class Print implements Statement {
+    // ...
+    @Override
+    public void execute( Environment env ) throws RuntimeError
+    {
+        Value resv = priex.evaluate(env);
+        System.out.println(resv);
+    }
+    // ...
+}
+````
+
+#### Ճյուղավորման հրաման
+
+`IF` կառուցվածքի ինտերպրետացիան սկսվում է ճյուղավորման պայմանի հաշվարկմամբ։ Այնուհետև,
+եթե պայմանի արժեքը տարբեր է զրոյից, կատարվում է `decision` անդամին կապված ճյուղը, 
+հակառակ դեպքում՝ `alternative` անդամին կապվածը։
+
+````java
+public class If implements Statement {
+    // ...
+    @Override
+    public void execute( Environment env ) throws RuntimeError
+    {
+        Value conval = condition.evaluate(env);
+        if( conval.real != 0.0 )
+            decision.execute(env);
+        else {
+            if( alternative != null )
+                alternative.execute(env);
+        }
+    }
+    // ...
+}
+````
+
+#### Կրկնման հրամաններ
+
+Կրկնման հրամանները երկուսն են՝ `FOR` և `WHILE`։ Առաջինը պարամետրով ցիկլն է,
+երկրորդը՝ նախապայմանով։ `FOR` կառուցվածքի մոդել `For` դասի `execute()` մեթոդում
+նախ հաշվարկվում են պարամետրի սկզբնական արժեքը, սահմանային արժեքը և քայլի արժեքը
+Հետո, քանի դեռ պարամետրի արժեքը փոքր է կամ հավասար սահմանային արժեքից, 
+կատարվում է ցիկլի մարմինը, և պարամետրի ընթացիկ արժեքին գումարվում է պարամետրի 
+քայլը։
+
+````java
+public class For implements Statement {
+    // ...
+    @Override
+    public void execute( Environment env ) throws RuntimeError
+    {
+        Value vi = initial.evaluate(env);
+        Value vb = limit.evaluate(env);
+        Value sp = new Value(1);
+        if( step != null )
+            sp = step.evaluate(env);
+
+        double prv = vi.real;
+        env.update(param, vi);
+        while( prv <=  vb.real ) {
+            body.execute(env);
+            prv += sp.real;
+            env.update(param, new Value(prv));
+        }
+    }
+    // ...
+}
+````
+
+Նախապայմանով ցիկլի մոդել `While` դասի `execute()` մեթոդը շատ ավելի պարզ է։ Քանի
+դեռ ցիկլի պայմանի հաշվարկված արժեքը հավասար չէ զրոյի, հաշվարկվում է ցիկլի մարմինը։
+
+````java
+public class While implements Statement {
+    // ...
+    @Override
+    public void execute( Environment env ) throws RuntimeError
+    {
+        Value cond = condition.evaluate(env);
+        while( cond.real != 0.0 ) {
+            body.execute(env);
+            cond = condition.evaluate(env);
+        }
+    }
+    // ...
+}
+````
+
+
+#### Պրոցեդուրայի կանչ
+
+
+#### Հրամանների հաջորդում
+
 

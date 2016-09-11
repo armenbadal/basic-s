@@ -8,7 +8,7 @@ public class For implements Statement {
     private Expression step = null;
     private Statement body = null;
 
-    public For(Variable pr, Expression in, Expression li, Expression sp, Statement be )
+    public For( Variable pr, Expression in, Expression li, Expression sp, Statement be )
     {
         param = pr;
         initial = in;
