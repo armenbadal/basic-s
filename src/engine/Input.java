@@ -14,7 +14,7 @@ public class Input implements Statement {
     {
         System.out.print("? ");
         java.util.Scanner scan = new java.util.Scanner(System.in);
-        if( vari.isText() ) {
+        if( vari.type == Variable.TEXT ) {
             String value = scan.nextLine();
             env.update(vari, new Value(value));
         }

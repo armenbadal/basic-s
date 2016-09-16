@@ -20,7 +20,7 @@ public class Variable implements Expression {
         name = na;
         index = ix;
 
-        if( isText() ) {
+        if( name.endsWith("$") ) {
             type = TEXT;
             name = name.substring(0, name.length() - 1);
         }
@@ -29,11 +29,6 @@ public class Variable implements Expression {
     public boolean isElement()
     {
         return index != null;
-    }
-
-    public boolean isText()
-    {
-        return name.endsWith("$");
     }
 
     @Override

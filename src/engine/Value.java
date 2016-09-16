@@ -70,7 +70,7 @@ public class Value {
         Value oval = (Value)other;
 
         if( kind == REAL && oval.kind == REAL )
-            return real == oval.real;
+            return 0 == Double.compare(real, oval.real);
 
         if( kind == TEXT && oval.kind == TEXT )
             return text.equals(oval.text);

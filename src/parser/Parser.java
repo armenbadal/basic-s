@@ -225,7 +225,7 @@ public class Parser {
         match(Kind.For);
         Variable prn = new Variable(lookahead.lexeme);
         match(Kind.Identifier);
-        if( prn.isText() )
+        if( prn.type == Variable.TEXT )
             throw new ParseError("FOR ցիկլի պարամետրը պետք է լինի թվային։");
         match(Kind.Eq);
         Expression init = parseDisjunction();
