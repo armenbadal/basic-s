@@ -41,7 +41,7 @@ public class Value {
         if( oper.equals("NOT") )
             return new Value(real == 0 ? 1 : 0);
 
-        return this;
+        throw new RuntimeError("Չսահմանված ունար գործողություն․ %s", oper);
     }
 
     public Value calculate( String oper, Value vlo ) throws RuntimeError
@@ -59,6 +59,24 @@ public class Value {
         // TODO իրականացնել բինար գործողությունները
 
         return null;
+    }
+
+    @Override
+    public boolean equals( Object other )
+    {
+        if( !(other instanceof Value) )
+            return false;
+
+        Value oval = (Value)other;
+
+        if( kind == REAL && oval.kind == REAL )
+            return real == oval.real;
+
+        if( kind == TEXT && oval.kind == TEXT )
+            return text.equals(oval.text);
+
+        // TODO ստուգել զանգվածների հավասարությունը
+        return false;
     }
 
     @Override
