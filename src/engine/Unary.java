@@ -15,11 +15,7 @@ public class Unary implements Expression {
     public Value evaluate( Environment env ) throws RuntimeError
     {
         Value res = subexpr.evaluate(env);
-        if( operation.equals("-") )
-            res = new Value(-res.real);
-        else if( operation.equals("NOT") )
-            res = new Value(res.real != 0 ? 0 : 1);
-        return res;
+        return Value.calculate(operation, res);
     }
 
     @Override

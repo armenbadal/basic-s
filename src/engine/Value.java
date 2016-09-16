@@ -30,30 +30,30 @@ public class Value {
         array = vl;
     }
 
-    public Value calculate( String oper ) throws RuntimeError
+    public static Value calculate( String oper, Value vlo ) throws RuntimeError
     {
-        if( kind == TEXT )
+        if( vlo.kind == TEXT )
             throw new RuntimeError("Տողի համար %s գործողություն սահմանված չէ։", oper);
 
         if( oper.equals("-") )
-            return new Value(-real);
+            return new Value(-vlo.real);
 
         if( oper.equals("NOT") )
-            return new Value(real == 0 ? 1 : 0);
+            return new Value(vlo.real == 0 ? 1 : 0);
 
         throw new RuntimeError("Չսահմանված ունար գործողություն․ %s", oper);
     }
 
-    public Value calculate( String oper, Value vlo ) throws RuntimeError
+    public static Value calculate( String oper, Value vlo, Value vli ) throws RuntimeError
     {
-        if( kind == TEXT && vlo.kind == TEXT ) {
+        if( vlo.kind == TEXT && vli.kind == TEXT ) {
             if( oper.equals("&") )
-                return new Value(text + vlo.text);
+                return new Value(vlo.text + vli.text);
 
             throw new RuntimeError("Տեքստերի համար %s գործողությունը սահմանված չէ։", oper);
         }
 
-        if( kind != REAL || vlo.kind != REAL )
+        if( vlo.kind != REAL || vli.kind != REAL )
             throw new RuntimeError("%s գործողության օպերանդները համաձայնեցված չեն։", oper);
 
         // TODO իրականացնել բինար գործողությունները
