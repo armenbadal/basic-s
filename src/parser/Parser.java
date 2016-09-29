@@ -17,24 +17,29 @@ public class Parser {
 
     public Parser( String text )
     {
-        scan = new Scanner(text + "@");
-        lookahead = scan.next();
-        // բաց թողնել ֆայլի սկզբի դատարկ տողերը
-        while( lookahead.is(Kind.NewLine) )
-            lookahead = scan.next();
-    }
-
-    public List<Function> parse() throws ParseError
-    {
         subroutines = new ArrayList<>();
         symbols = new HashMap<>();
 
-        while( lookahead.is(Kind.Declare, Kind.Function) ) {
+        scan = new Scanner(text + "@");
+    }
+
+    public List<Function> parseProgram() throws ParseError
+    {
+        // կարդալ առաջին թոքենը
+        lookahead = scan.next();
+
+        // բաց թողնել ֆայլի սկզբի դատարկ տողերը
+        while( lookahead.is(Kind.NewLine) )
+            lookahead = scan.next();
+
+        while( true ) {
             Function subri = null;
             if( lookahead.is(Kind.Declare) )
                 subri = parseDeclare();
             else if( lookahead.is(Kind.Function) )
                 subri = parseFunction();
+            else
+                break;
             if( subri != null )
                 addSubroutine(subri);
         }

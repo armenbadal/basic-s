@@ -28,7 +28,7 @@ public class Basic {
         Parser parser = new Parser(texter.toString());
         List<Function> parsed;
         try {
-            parsed = parser.parse();
+            parsed = parser.parseProgram();
         }
         catch( ParseError se ) {
             System.err.println(se.getMessage());
