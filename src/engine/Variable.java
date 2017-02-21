@@ -36,7 +36,7 @@ public class Variable implements Expression {
     {
         Value val = env.get(this);
         if( val == null )
-            throw new RuntimeError(String.format("Չսահմանված փոփոխական %s", name));
+            throw new RuntimeError("Չսահմանված փոփոխական %s", name);
         return val;
     }
 

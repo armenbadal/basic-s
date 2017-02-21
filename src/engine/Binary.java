@@ -20,7 +20,7 @@ public class Binary implements Expression {
         Value res1 = subexpri.evaluate(env);
 
         // տեքստային գործողություն
-        if( res0.kind == Value.TEXT && res1.kind == Value.TEXT ) {
+        if( res0.type == Value.TEXT && res1.type == Value.TEXT ) {
             if( operation.equals("&") )
                 return new Value(res0.text + res1.text);
             else

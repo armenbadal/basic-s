@@ -6,7 +6,7 @@ public class Value {
     public static final char TEXT = 'T';
     public static final char ARRAY = 'A';
 
-    public char kind = REAL;
+    public char type = REAL;
 
     public double real = 0.0;
     public String text = null;
@@ -14,25 +14,25 @@ public class Value {
 
     public Value( double vl )
     {
-        kind = REAL;
+        type = REAL;
         real = vl;
     }
 
     public Value( String vl )
     {
-        kind = TEXT;
+        type = TEXT;
         text = vl;
     }
 
     public Value( Array vl )
     {
-        kind = ARRAY;
+        type = ARRAY;
         array = vl;
     }
 
     public static Value calculate( String oper, Value vlo ) throws RuntimeError
     {
-        if( vlo.kind == TEXT )
+        if( vlo.type == TEXT )
             throw new RuntimeError("Տողի համար %s գործողություն սահմանված չէ։", oper);
 
         if( oper.equals("-") )
@@ -46,14 +46,14 @@ public class Value {
 
     public static Value calculate( String oper, Value vlo, Value vli ) throws RuntimeError
     {
-        if( vlo.kind == TEXT && vli.kind == TEXT ) {
+        if( vlo.type == TEXT && vli.type == TEXT ) {
             if( oper.equals("&") )
                 return new Value(vlo.text + vli.text);
 
             throw new RuntimeError("Տեքստերի համար %s գործողությունը սահմանված չէ։", oper);
         }
 
-        if( vlo.kind != REAL || vli.kind != REAL )
+        if( vlo.type != REAL || vli.type != REAL )
             throw new RuntimeError("%s գործողության օպերանդները համաձայնեցված չեն։", oper);
 
         // TODO իրականացնել բինար գործողությունները
@@ -69,10 +69,10 @@ public class Value {
 
         Value oval = (Value)other;
 
-        if( kind == REAL && oval.kind == REAL )
+        if( type == REAL && oval.type == REAL )
             return 0 == Double.compare(real, oval.real);
 
-        if( kind == TEXT && oval.kind == TEXT )
+        if( type == TEXT && oval.type == TEXT )
             return text.equals(oval.text);
 
         // TODO ստուգել զանգվածների հավասարությունը
@@ -82,10 +82,10 @@ public class Value {
     @Override
     public String toString()
     {
-        if( kind == REAL )
+        if( type == REAL )
             return String.valueOf(real);
 
-        if( kind == TEXT )
+        if( type == TEXT )
             return text;
 
         return null;
